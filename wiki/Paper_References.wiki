@@ -1,5 +1,6 @@
 = Ransac =
 *Random sample consensus: a paradigm for model fitting with applications to image analysis and automated cartography.*
+[http://en.wikipedia.org/wiki/RANSAC Wikipedia RANSAC article]
 
 A line fitting example : 'Find the best line model that fit the most of the point."
 
