@@ -14,11 +14,11 @@ y = y + 5*rand(size(y));
 x = 1:length(y);
 
 points = [x;y];
-%Estimate the slope and constant Ax + b
-EstimatedLine = LineToPointFitting(points);
+%Estimate the slope and constant ax + b
+[a b] = LineToPointFitting(points);
 
 % constructing the straight line using the estimated slope and constant
-yEst = EstimatedLine(2)*x + EstimatedLine(1); 
+yEst = a*x + b; 
 
 close all
 figure
