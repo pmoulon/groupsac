@@ -77,7 +77,7 @@ end
     end
 
 %% default fun_candidates returns all the point indices as candidates
-    function [candidates] = default_fun_candidates(round)
+    function [candidates] = default_fun_candidates(~)
         candidates = 1 : datum_num;
     end
 end
