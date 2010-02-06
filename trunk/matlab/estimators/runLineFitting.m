@@ -15,7 +15,7 @@ x = 1:length(y);
 
 points = [x;y];
 %Estimate the slope and constant ax + b
-[a b] = LineToPointFitting(points);
+[a b] = lineFitting(points);
 
 % constructing the straight line using the estimated slope and constant
 yEst = a*x + b; 
