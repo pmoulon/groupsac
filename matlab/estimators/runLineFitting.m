@@ -13,12 +13,12 @@ y = y + 5*rand(size(y));
 % The x coordinates 
 x = 1:length(y);
 
-points = [x;y];
+points = [x;y]';
 %Estimate the slope and constant ax + b
-[a b] = lineFitting(points);
+[ab] = lineFitting(points);
 
 % constructing the straight line using the estimated slope and constant
-yEst = a*x + b; 
+yEst = ab(1)*x + ab(2);
 
 close all
 figure
