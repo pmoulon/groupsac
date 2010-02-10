@@ -1,4 +1,4 @@
-% use RANASC to determine the inliers in the points by fitting a line model
+% use RANSAC to determine the inliers in the points by fitting a line model
 function [success, inliers, model] = ransacLineFitting(points, sigma)
 
 %% control parameters
