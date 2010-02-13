@@ -1,8 +1,11 @@
 
 #include <vector>
+#include <iostream>
+using namespace std;
 
-// the default termination check for RANSAC, which only depends on the rounds needed
-vector<int>
+// The default termination check for RANSAC,
+//  which only depends on the rounds needed
+bool
 template<Model>
   default_termination
   (
@@ -14,10 +17,10 @@ template<Model>
     int rounds_needed; //??? PM what is persistent keyword use in the matlab code : equivalent to static keyword ???
     if ( inliers.size() > best_inliers.size() ) {
         best_inliers = inliers;
-        rounds_needed = ransac_rounds_needed(max_rounds, min_sample_num, l1mp, datum_num, inliers.sizee()); //Todo : to define
-        fprintf(1,'global round=%d   \tbest=%d \trounds_needed=%d\n', round, length(best_inliers), rounds_needed);
+        rounds_needed = ransac_rounds_needed(max_rounds, min_sample_num, l1mp, datum_num, inliers.size()); //Todo : to define
+        cout<<"global round=" <<round<<"\tbest="<<best_inliers.size()<<"\trounds_needed="<<rounds_needed<<endl;
     }
-    terminate = round >= rounds_needed;
+    return round >= rounds_needed;
 }
 
 // default fun_candidates returns all the point indices as candidates
@@ -56,7 +59,7 @@ template<Solver, Evaluator, CandidatesSelector, Sampler>
   {    
       ++round;
       if ( (round%100) == 0 ) {
-          fprintf(1, 'global round=%d   \tbest=%d\n', round, length(best_inliers));
+          cout<<"global round=" << round << "\tbest=" << best_inliers.size() << endl;
       }
       
       vector<int> candidates = candidatesSelector(round);       // get the candidates for sampling
@@ -76,17 +79,22 @@ template<Solver, Evaluator, CandidatesSelector, Sampler>
           fun_draw(sampled);
       end*/
       
-      [terminate best_inliers] = fun_termination(best_inliers, inliers, model, round);  // check the termination condition
-      if terminate  {
-          if gui fun_draw(sampled);  end                  // always draw the best sample at the end
-          success = true;
+      if( fun_termination(best_inliers, inliers, model, round) )  // check the termination condition
+      {
+        //if gui fun_draw(sampled);  end                  // always draw the best sample at the end
+        success = true;
           
-          // finalize the model and inliers
-          model = fun_compute(best_inliers);
-          [best_inliers best_model] = fun_evaluate(model, 1:datum_num);
-          veri_num = veri_num + length(candidates);
-          fprintf(1, 'quiting ransac...found %d inliers after %d rounds\n', length(best_inliers), round);
-          break;
+        // finalize the model and inliers
+        vector<Solver:Model> model = solver(sampled);
+        //PM : For each computed Model:
+        {
+          vector<int> inliers = evaluator(model, candidates); // compute the inliers for the new model.
+          //...
+        }
+        veri_num += veri_num + candidates.size();
+        cout<< "quiting ransac...found : " << best_inliers.size() 
+            << " inliers after : " << round << " rounds" << endl;
+        break;
     }
   }
 }
