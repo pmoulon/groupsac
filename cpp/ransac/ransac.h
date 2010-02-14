@@ -15,6 +15,7 @@ template<Model>
     int round
   )
     int rounds_needed; //??? PM what is persistent keyword use in the matlab code : equivalent to static keyword ???
+		// Kai: yes, it is.
     if ( inliers.size() > best_inliers.size() ) {
         best_inliers = inliers;
         rounds_needed = ransac_rounds_needed(max_rounds, min_sample_num, l1mp, datum_num, inliers.size()); //Todo : to define
@@ -23,10 +24,13 @@ template<Model>
     return round >= rounds_needed;
 }
 
-// default fun_candidates returns all the point indices as candidates
+// default fun_candidates returns all the point indices (0-based) as candidates
 vector<int> default_fun_candidates(vector<int> & candidates)
 {
-    return candidates;
+    vector<int> indices;
+    for (int i=0; i<candiates.size(); i++)
+        indices.push_back(i++);
+    return indices;
 }
 
 // ransac: the common routine for RANSAC
@@ -40,6 +44,7 @@ template<Solver, Evaluator, CandidatesSelector, Sampler>
     const CandidatesSelector & candidatesSelector,  // the function to select candidates from all data points
     const Sampler & sampler, // the sampling function
     // PM -> I purpose to encapsulate this term in the solver. solver::MINIMUM_SAMPLES
+    // KAI: I agree with you
     // //   min_sample_num // the size of a minimum sample
     int imax_rounds,  // the maximum rounds for RANSAC routine
     double confidence // the confidence want to achieve at the end
@@ -56,6 +61,9 @@ template<Solver, Evaluator, CandidatesSelector, Sampler>
   int round = 0;  // current round
   vector<int> best_inliers; // the best inliers so far
   while(1) // PM : I prefer to put something here like while(!end)
+      /**
+       * KAI: That's good
+       */
   {    
       ++round;
       if ( (round%100) == 0 ) {
@@ -68,7 +76,16 @@ template<Solver, Evaluator, CandidatesSelector, Sampler>
       // For GroupSAC, return inlier in the current group configuration
       vector<Solver:Model> model = solver(sampled); // compute the new model
       //??????????? // PM : What the program do if many models are computed ???????
+      /**
+       * KAI: this case is taken care of in the matlab code. Basically "model" is only passed to "evaluator".
+       * inside the "evaluator", it will handle the case that model contains several individual models.
+       * BTW "fun_termination" does not need model in all RANSAC variants, and I just forgot to remove it.
+       */
       //PM : For each computed Model:
+      /**
+       * Your way is also good, maybe it is much simpler than my implementation. You can keep the current code,
+       * and I will change my implementation to make them consistent.
+       */
       {
         vector<int> inliers = evaluator(model, candidates); // compute the inliers for the new model.
         //...
