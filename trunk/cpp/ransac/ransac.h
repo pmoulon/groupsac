@@ -1,7 +1,6 @@
 
 #include <vector>
 #include <iostream>
-#include <climits>
 using namespace std;
 
 // The default termination check for RANSAC,
@@ -12,14 +11,16 @@ template<Model>
   (
     vector<int> & best_inliers,
     const vector<int> & inliers,
-    const Model &  model,
-    int round
+    int round,
+    int logConfidence,
+    int iSolverMinimalSamples,
+    int iPutativesNumber
   )
-    int rounds_needed; //??? PM what is persistent keyword use in the matlab code : equivalent to static keyword ???
+    static int rounds_needed; //??? PM what is persistent keyword use in the matlab code : equivalent to static keyword ???
 		// Kai: yes, it is.
     if ( inliers.size() > best_inliers.size() ) {
         best_inliers = inliers;
-        rounds_needed = ransac_rounds_needed(max_rounds, min_sample_num, l1mp, datum_num, inliers.size()); //Todo : to define
+        rounds_needed = ransac_rounds_needed(max_rounds, iSolverMinimalSamples, logConfidence, iPutativesNumber, inliers.size()); //Todo : to define
         cout<<"global round=" <<round<<"\tbest="<<best_inliers.size()<<"\trounds_needed="<<rounds_needed<<endl;
     }
     return round >= rounds_needed;
@@ -44,9 +45,6 @@ template<Solver, Evaluator, CandidatesSelector, Sampler>
     const Evaluator & evaluator,  // the function to evaluate a given model
     const CandidatesSelector & candidatesSelector,  // the function to select candidates from all data points
     const Sampler & sampler, // the sampling function
-    // PM -> I purpose to encapsulate this term in the solver. solver::MINIMUM_SAMPLES
-    // KAI: I agree with you
-    // //   min_sample_num // the size of a minimum sample
     int imax_rounds,  // the maximum rounds for RANSAC routine
     double confidence // the confidence want to achieve at the end
   ) 
@@ -54,7 +52,6 @@ template<Solver, Evaluator, CandidatesSelector, Sampler>
 
   // parameters
   int veri_num = 0;  // the total number of verifications made
-  //round_per_draw = 1;
   double l1mp = log(1.0 - confidence);
 
   // the main ransac routine
@@ -73,12 +70,11 @@ template<Solver, Evaluator, CandidatesSelector, Sampler>
 
     // For GroupSAC, return inlier in the current group configuration
     vector<Solver:Model> model = solver(sampled); // compute the new model
-    int iBest = -1;
-    int iMaxCandidates = std::numeric_limits<int>::max();
     vector<int> inliers = evaluator(model, candidates); // compute the inliers for the array of models.
     veri_num += candidates.size();
 
-    if( fun_termination(best_inliers, inliers, model, round) )  // check the termination condition
+    if( fun_termination(best_inliers, inliers, round, 
+                        l1mp, Solver::MININUM_SAMPLES, iPutativesNumber) )  // check the termination condition
     {
       success = true;
         
