@@ -1,6 +1,7 @@
 
 #include <vector>
 #include <iostream>
+#include <climits>
 using namespace std;
 
 // The default termination check for RANSAC,
@@ -60,58 +61,34 @@ template<Solver, Evaluator, CandidatesSelector, Sampler>
   bool success = false; // whether RANSAC is successful at last
   int round = 0;  // current round
   vector<int> best_inliers; // the best inliers so far
-  while(1) // PM : I prefer to put something here like while(!end)
-      /**
-       * KAI: That's good
-       */
+  while(!success)
   {    
-      ++round;
-      if ( (round%100) == 0 ) {
-          cout<<"global round=" << round << "\tbest=" << best_inliers.size() << endl;
-      }
-      
-      vector<int> candidates = candidatesSelector(round);       // get the candidates for sampling
-      vector<int> sampled = sampler(candidates, Solver::MININUM_SAMPLES);// get sample indices from candidates
-      
-      // For GroupSAC, return inlier in the current group configuration
-      vector<Solver:Model> model = solver(sampled); // compute the new model
-      //??????????? // PM : What the program do if many models are computed ???????
-      /**
-       * KAI: this case is taken care of in the matlab code. Basically "model" is only passed to "evaluator".
-       * inside the "evaluator", it will handle the case that model contains several individual models.
-       * BTW "fun_termination" does not need model in all RANSAC variants, and I just forgot to remove it.
-       */
-      //PM : For each computed Model:
-      /**
-       * Your way is also good, maybe it is much simpler than my implementation. You can keep the current code,
-       * and I will change my implementation to make them consistent.
-       */
-      {
-        vector<int> inliers = evaluator(model, candidates); // compute the inliers for the new model.
-        //...
-      }
-      veri_num += candidates.size();
-      
-      /*if gui && mod(round,round_per_draw) == 0
-          fun_draw(sampled);
-      end*/
-      
-      if( fun_termination(best_inliers, inliers, model, round) )  // check the termination condition
-      {
-        //if gui fun_draw(sampled);  end                  // always draw the best sample at the end
-        success = true;
-          
-        // finalize the model and inliers
-        vector<Solver:Model> model = solver(sampled);
-        //PM : For each computed Model:
-        {
-          vector<int> inliers = evaluator(model, candidates); // compute the inliers for the new model.
-          //...
-        }
-        veri_num += veri_num + candidates.size();
-        cout<< "quiting ransac...found : " << best_inliers.size() 
-            << " inliers after : " << round << " rounds" << endl;
-        break;
+    ++round;
+    if ( (round%100) == 0 ) {
+        cout<<"global round=" << round << "\tbest=" << best_inliers.size() << endl;
+    }
+
+    vector<int> candidates = candidatesSelector(round);       // get the candidates for sampling
+    vector<int> sampled = sampler(candidates, Solver::MININUM_SAMPLES);// get sample indices from candidates
+
+    // For GroupSAC, return inlier in the current group configuration
+    vector<Solver:Model> model = solver(sampled); // compute the new model
+    int iBest = -1;
+    int iMaxCandidates = std::numeric_limits<int>::max();
+    vector<int> inliers = evaluator(model, candidates); // compute the inliers for the array of models.
+    veri_num += candidates.size();
+
+    if( fun_termination(best_inliers, inliers, model, round) )  // check the termination condition
+    {
+      success = true;
+        
+      // finalize the model and inliers
+      vector<Solver:Model> model = solver(sampled);
+      vector<int> inliers = evaluator(model, candidates); // compute the inliers for the array of model.
+      veri_num += veri_num + candidates.size();
+      cout<< "quiting ransac...found : " << best_inliers.size() 
+          << " inliers after : " << round << " rounds" << endl;
+      break;
     }
   }
 }
