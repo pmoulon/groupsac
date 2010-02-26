@@ -3,11 +3,13 @@
 #include <iostream>
 using namespace std;
 
+namespace groupsac  {
+namespace ransac  {
+
 // The default termination check for RANSAC,
 //  which only depends on the rounds needed
-bool
-template<Model>
-  default_termination
+template< typename Model >
+bool  default_termination
   (
     vector<int> & best_inliers,
     const vector<int> & inliers,
@@ -16,6 +18,7 @@ template<Model>
     int iSolverMinimalSamples,
     int iPutativesNumber
   )
+{
     static int rounds_needed; //??? PM what is persistent keyword use in the matlab code : equivalent to static keyword ???
 		// Kai: yes, it is.
     if ( inliers.size() > best_inliers.size() ) {
@@ -27,18 +30,17 @@ template<Model>
 }
 
 // default fun_candidates returns all the point indices (0-based) as candidates
-vector<int> default_fun_candidates(vector<int> & candidates)
+vector<int> default_fun_candidates(vector<int> & candidates, int round)
 {
     vector<int> indices;
-    for (int i=0; i<candiates.size(); i++)
-        indices.push_back(i++);
+    for (unsigned int i=0; i<candidates.size(); i++)
+        indices.push_back(i);
     return indices;
 }
 
 // ransac: the common routine for RANSAC
-void
-template<Solver, Evaluator, CandidatesSelector, Sampler>
-  Ransac_RobustEstimator<Solver, Evaluator, CandidatesSelector, Sampler>
+template<typename Solver, typename Evaluator, typename CandidatesSelector, typename Sampler>
+void  Ransac_RobustEstimator
   (
     int iPutativesNumber,  // the number of putatives
     const Solver & solver,  // compute the underlying model given a sample set
@@ -65,7 +67,7 @@ template<Solver, Evaluator, CandidatesSelector, Sampler>
         cout<<"global round=" << round << "\tbest=" << best_inliers.size() << endl;
     }
 
-    vector<int> candidates = candidatesSelector(round);       // get the candidates for sampling
+    vector<int> candidates = candidatesSelector(candidates, round);    // get the candidates for sampling
     vector<int> sampled = sampler(candidates, Solver::MININUM_SAMPLES);// get sample indices from candidates
 
     // For GroupSAC, return inlier in the current group configuration
@@ -88,6 +90,8 @@ template<Solver, Evaluator, CandidatesSelector, Sampler>
     }
   }
 }
+}; // namespace ransac
+}; // namespace groupsac
 
 
 
