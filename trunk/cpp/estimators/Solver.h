@@ -15,6 +15,7 @@ class Solver
   /// Define the minimum number of candidates to compute a model
   enum { MINIMUM_SAMPLES = 0 };
 public :
+  typedef Model ModelType;
   /**
     * Find the solutions that fit the candidates data.
     *
@@ -24,6 +25,8 @@ public :
     * \return True if success, else false.
     */
   virtual bool solve(const T & candidates, vector<Model> & model)=0;
+
+  int get_MINIMUM_SAMPLES() const {return MINIMUM_SAMPLES;}
 };
 
 }; // namespace estimators

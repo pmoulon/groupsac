@@ -19,20 +19,20 @@ namespace estimators  {
 template<typename T = mat, typename Model = vec>
 class lineFittingSolver : public Solver<T,Model>
 {
-public :
   /// At least two point are necessary to solve the line equation y = ax+b
   enum { MINIMUM_SAMPLES = 2 };
-  
+public :
+
   /// See groupsac::estimators::Solver
   bool solve(const T & candidates, vector<Model> & model)
   {
-      cout << "Points used for the estimation:" << endl;
+      /*cout << "Points used for the estimation:" << endl;
       cout << candidates << endl;
 
       // Build matrices to solve Ax = b problem:
       vec b(candidates.n_rows);
       mat A(candidates.n_rows, 2);
-      for(u32 i=0; i<candidates.n_rows; ++i)
+      for(unsigned int i=0; i<candidates.n_rows; ++i)
       {
         b(i)   = candidates(i,1);
 
@@ -41,16 +41,17 @@ public :
       }
       // Compute least-squares solution:
       vec solution = solve(A,b);
-  
+
       cout << "solution:" << endl;
-      cout << solution << endl;
+      cout << solution << endl;*/
+      return false;
   }
 
   /**
   * Return the candidates that are estmated as inliers to the best model
   *
   * \param[in] model (The model(s) that fit the data).
-  * \param[in] candidates (The input data).  
+  * \param[in] candidates (The input data).
   *
   * \return The list of point that are considered as inliers
   * \ /!\ Note we don't have a criteria or threshold to consider inlier/outlier spaces
@@ -60,7 +61,7 @@ public :
     // For each model compute the number of inliers and the indices of the inliers.
     // Return the longest inliers vector.
     // must use the pointToLineDist.h file.
-    return vector<int>;
+    return vector<int>();
   }
 };
 
