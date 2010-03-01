@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
 #include "ransac/ransac.h"
@@ -17,10 +18,10 @@ using namespace groupsac;
 template <typename T>
 vector<int> sampler(const T & candidates, int MININUM_SAMPLES)
 {
-  return vector<int>;
+  return vector<int>();
 }
 
-void main()
+int main()
 {
   //-- Create the input solver :
   estimators::Solver<mat,vec> * ptrSolver = new estimators::lineFittingSolver<mat,vec>();
@@ -31,11 +32,14 @@ void main()
     *ptrSolver,  // compute the underlying model given a sample set
     estimators::lineFittingSolver<mat,vec>::defaultEvaluator,  // the function to evaluate a given model
     ransac::default_fun_candidates,  // the function to select candidates from all data points
-    sampler<mat>, // the sampling function
+    sampler< vector<int> >, // the sampling function
+    ransac::default_fun_termination, // the termination function
     1000,  // the maximum rounds for RANSAC routine
     0.95 // the confidence want to achieve at the end
   );
 
 
   delete ptrSolver;
+
+  return 0;
 }
