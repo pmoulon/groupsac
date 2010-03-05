@@ -20,15 +20,36 @@ vector<int> sampler(const T & candidates, int MININUM_SAMPLES)
 {
   return vector<int>();
 }
+class mat
+{
+};
+class vec
+{
+};
+template<typename T>
+T extractor(const T & data, const vector<int> & sampled)
+{
+  return data;
+}
+
+//-- END -- Must now be defined
+//-------
+
 
 int main()
 {
   //-- Create the input solver :
-  estimators::Solver<mat,vec> * ptrSolver = new estimators::lineFittingSolver<mat,vec>();
+  estimators::Solver<mat,vec> * ptrSolver = new estimators::lineFittingSolver<mat,vec>;
+
+  //-- Create input data
+  mat dataPoints;
+  // Todo(pmoulon) Initialize dataPoints
 
   ransac::Ransac_RobustEstimator
   (
-    3,  // the number of putatives
+    dataPoints, // the input data
+    extractor<mat>, // How select sampled point from indices
+    3,  // the number of putatives data ( ideally dataPoints.cols() )
     *ptrSolver,  // compute the underlying model given a sample set
     estimators::lineFittingSolver<mat,vec>::defaultEvaluator,  // the function to evaluate a given model
     ransac::default_fun_candidates,  // the function to select candidates from all data points
