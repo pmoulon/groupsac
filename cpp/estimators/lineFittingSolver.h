@@ -24,7 +24,7 @@ class lineFittingSolver : public Solver<T,Model>
 public :
 
   /// See groupsac::estimators::Solver
-  bool solve(const T & candidates, vector<Model> & model)
+  bool solve(const T & candidates, vector<Model> & model) const
   {
       /*cout << "Points used for the estimation:" << endl;
       cout << candidates << endl;
