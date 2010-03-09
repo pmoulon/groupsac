@@ -1,7 +1,8 @@
 #ifndef GROUPSAC_ESTIMATORS_POINTTOLINEDIST_H
 #define GROUPSAC_ESTIMATORS_POINTTOLINEDIST_H
 
-class vec;
+#include "armadillo/include/armadillo"
+using namespace arma;
 
 namespace groupsac  {
 namespace estimators  {
@@ -16,8 +17,8 @@ namespace estimators  {
 * http://mathworld.wolfram.com/Point-LineDistance2-Dimensional.html
 */
 double pt2LineDist(const vec & ab,const vec & pt)  {
-  //dist = abs(ab(1)*pt(1) - pt(2) + ab(2)) / sqrt(ab(1) * ab(1) + 1);
-  return -1.0f; ///Todo(pmoulon) wait the matrix framework
+  return abs(ab(0)*pt(0) - pt(1) + ab(1)) / sqrt(ab(0) * ab(0) + 1);
+  //return -1.0f; ///Todo(pmoulon) wait the matrix framework
 }
 
 }; // namespace estimators
