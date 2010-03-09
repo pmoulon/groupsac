@@ -26,7 +26,7 @@ public :
     */
   virtual bool solve(const T & candidates, vector<Model> & model)const =0;
 
-  int get_MINIMUM_SAMPLES() const {return MINIMUM_SAMPLES;}
+  virtual int get_MINIMUM_SAMPLES() const =0;
 };
 
 }; // namespace estimators

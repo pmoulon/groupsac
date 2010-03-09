@@ -3,13 +3,11 @@
 
 #include <iostream>
 #include <vector>
+#include "armadillo/include/armadillo"
+#include "pointToLineDist.h"
 #include "Solver.h"
-//#include "armadillo"
 using namespace std;
-//using namespace arma;
-
-class mat;
-class vec;
+using namespace arma;
 
 namespace groupsac  {
 namespace estimators  {
@@ -23,27 +21,27 @@ class lineFittingSolver : public Solver<T,Model>
   enum { MINIMUM_SAMPLES = 2 };
 public :
 
+  int get_MINIMUM_SAMPLES() const {return MINIMUM_SAMPLES;}
   /// See groupsac::estimators::Solver
   bool solve(const T & candidates, vector<Model> & model) const
   {
-      /*cout << "Points used for the estimation:" << endl;
+      cout << "Points used for the estimation:" << endl;
       cout << candidates << endl;
 
       // Build matrices to solve Ax = b problem:
       vec b(candidates.n_rows);
       mat A(candidates.n_rows, 2);
-      for(unsigned int i=0; i<candidates.n_rows; ++i)
-      {
-        b(i)   = candidates(i,1);
+      b = candidates.col(1);
+      A.col(0).fill(1.0);
+      A.col(1) = candidates.col(0);
 
-        A(i,0) = 1;
-        A(i,1) = candidates(i,0);
-      }
       // Compute least-squares solution:
-      vec solution = solve(A,b);
+      vec solution = ::solve(A,b);
 
       cout << "solution:" << endl;
-      cout << solution << endl;*/
+      cout << solution << endl;
+      std::swap(solution(0), solution(1));
+      model.push_back(solution);
       return false;
   }
 
@@ -56,12 +54,23 @@ public :
   * \return The list of point that are considered as inliers
   * \ /!\ Note we don't have a criteria or threshold to consider inlier/outlier spaces
   */
-  static vector<int> defaultEvaluator(vector<Model> & model, const T & candidates)
+  static vector<int> defaultEvaluator(vector<Model> & model, const T & candidates, double threshold)
   {
+    vector<int> inliers;
     // For each model compute the number of inliers and the indices of the inliers.
     // Return the longest inliers vector.
     // must use the pointToLineDist.h file.
-    return vector<int>();
+    for (size_t i=0; i < model.size(); ++i)
+    {
+      const Model & modelToTest = model[i];
+      for (size_t j=0; j < candidates.n_rows; ++j)
+      {
+        double dist = pt2LineDist( modelToTest, trans(candidates.row(j)) );
+        if (dist < threshold)
+          inliers.push_back(i);
+      }
+    }
+    return inliers;
   }
 };
 

@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <cmath>
+#include "ransacTools.h"
 using namespace std;
 
 namespace groupsac  {
@@ -67,10 +68,15 @@ void  Ransac_RobustEstimator
     double confidence         // the confidence want to achieve at the end
   )
 {
-
   // parameters
   int veri_num = 0;  // the total number of verifications made
   double l1mp = log(1.0 - confidence);
+  double sigma = 0.1; //Todo(pmoulon) MUST BE A PARAMETER
+
+  //-- Build initial candidates indices
+  vector<int> array;
+  for(size_t i=0; i < data.n_rows; ++i)
+    array.push_back(i);
 
   // the main ransac routine
   bool success = false;     // whether RANSAC is successful at last
@@ -83,13 +89,13 @@ void  Ransac_RobustEstimator
         cout<<"global round=" << round << "\tbest=" << best_inliers.size() << endl;
     }
 
-    vector<int> candidates = candidatesSelector(candidates, round);         // get the candidates for sampling
+    vector<int> candidates = candidatesSelector(array, round);         // get the candidates for sampling
     vector<int> sampled = sampler(candidates, solver.get_MINIMUM_SAMPLES());// get sample indices from candidates
 
     // For GroupSAC, return inlier in the current group configuration
     vector<typename Solver::ModelType> vec_model;
     solver.solve( extractor(data,sampled) , vec_model); // compute the new model
-    vector<int> inliers = evaluator(vec_model, extractor(data,candidates)); // compute the inliers for the array of models.
+    vector<int> inliers = evaluator(vec_model, extractor(data,candidates), ransac_threshold(1,sigma)); // compute the inliers for the array of models.
     veri_num += candidates.size();
 
     if( fun_termination(best_inliers, inliers,
@@ -104,7 +110,7 @@ void  Ransac_RobustEstimator
       vector<typename Solver::ModelType> vec_model_finalize;
       solver.solve( extractor(data,sampled), vec_model_finalize);
       // compute the inliers for the array of model.
-      vector<int> inliers = evaluator(vec_model_finalize, extractor(data,candidates));
+      vector<int> inliers = evaluator(vec_model_finalize, extractor(data,candidates), ransac_threshold(1,sigma));
       veri_num += veri_num + candidates.size();
       cout<< "quiting ransac...found : " << best_inliers.size()
           << " inliers after : " << round << " rounds" << endl;
@@ -113,6 +119,3 @@ void  Ransac_RobustEstimator
 }
 }; // namespace ransac
 }; // namespace groupsac
-
-
-
