@@ -36,12 +36,19 @@ public :
       A.col(1) = candidates.col(0);
 
       // Compute least-squares solution:
-      vec solution = ::solve(A,b);
-
-      cout << "solution:" << endl;
-      cout << solution << endl;
-      std::swap(solution(0), solution(1));
-      model.push_back(solution);
+      vec X;
+      if ( ::solve(X, A, b) )
+      {
+        cout << "solution:" << endl << X << endl;
+        std::swap(X(0), X(1));
+        model.push_back(X);
+        return true;
+      }
+      else
+      {
+        cout << "ERROR : cannot find a solution" << endl;
+        return false;
+      }
       return false;
   }
 
