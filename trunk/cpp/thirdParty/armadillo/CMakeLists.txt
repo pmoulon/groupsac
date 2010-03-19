@@ -9,7 +9,7 @@ SET(ARMA_PATCH 4)
 
 MESSAGE(STATUS "Configuring Armadillo ${ARMA_MAJOR}.${ARMA_MINOR}.${ARMA_PATCH}")
 
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/build_aux/cmake/Modules/")
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/thirdParty/armadillo/build_aux/cmake/Modules/")
 
 INCLUDE(CheckIncludeFileCXX)
 INCLUDE(CheckLibraryExists)
@@ -41,6 +41,8 @@ IF(WIN32)
   MESSAGE(STATUS "(described in the README.txt file), or simply use the")
   MESSAGE(STATUS "include folder directly.")
   MESSAGE(STATUS "")
+  SET(ARMA_USE_LAPACK true)
+  SET(ARMA_USE_BLAS   true)
 ENDIF(WIN32)
 
 
@@ -203,55 +205,6 @@ TARGET_LINK_LIBRARIES( armadillo ${ARMA_LIBS} )
 
 SET_TARGET_PROPERTIES(armadillo PROPERTIES VERSION ${ARMA_MAJOR}.${ARMA_MINOR}.${ARMA_PATCH} SOVERSION 0)
 
-# As Red Hat Enterprise Linux (and related systems such as Fedora)
-# does not search /usr/local/lib by default, we need to place the
-# library in /usr
-
-IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  SET(CMAKE_INSTALL_PREFIX "/usr")
-ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-
-MESSAGE(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
-
-
-# Allow for the "lib" directory to be specified on the command line
-
-IF(NOT LIB_INSTALL_DIR)
-  IF(UNIX AND NOT APPLE)   # I don't know how Mac OS handles 64 bit systems
-    IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
-      MESSAGE(STATUS "Detected 64 bit system")
-      SET(LIB_INSTALL_DIR "lib64")
-    ELSE(CMAKE_SIZEOF_VOID_P EQUAL 8)
-      SET(LIB_INSTALL_DIR "lib")
-    ENDIF(CMAKE_SIZEOF_VOID_P EQUAL 8)
-  
-  ELSE(UNIX AND NOT APPLE)
-    SET(LIB_INSTALL_DIR "lib")
-  ENDIF(UNIX AND NOT APPLE)
-ENDIF(NOT LIB_INSTALL_DIR)
-
-MESSAGE(STATUS "LIB_INSTALL_DIR = ${LIB_INSTALL_DIR}")
-
-# Allow for the "include" directory to be specified on the command line
-
-IF(NOT INCLUDE_INSTALL_DIR)
-  SET(INCLUDE_INSTALL_DIR "include")
-ENDIF(NOT INCLUDE_INSTALL_DIR)
-
-MESSAGE(STATUS "INCLUDE_INSTALL_DIR = ${INCLUDE_INSTALL_DIR}")
-
-
-# Note that the trailing / character in "include/" is critical
-
-INSTALL(DIRECTORY include/ DESTINATION ${INCLUDE_INSTALL_DIR}
-PATTERN ".svn" EXCLUDE
-PATTERN "*.cmake" EXCLUDE
-PATTERN "*~" EXCLUDE
-PATTERN "*orig" EXCLUDE
-)
-
-
-INSTALL(TARGETS armadillo DESTINATION ${LIB_INSTALL_DIR})
 
 
 

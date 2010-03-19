@@ -8,7 +8,7 @@
 SET(LAPACK_NAMES ${LAPACK_NAMES} lapack)
 FIND_LIBRARY(LAPACK_LIBRARY
   NAMES ${LAPACK_NAMES}
-  PATHS /usr/lib64 /usr/lib /usr/local/lib64 /usr/local/lib
+  PATHS /usr/lib64 /usr/lib /usr/local/lib64 /usr/local/lib ${CMAKE_SOURCE_DIR}/thirdParty/windowsLib
   )
 
 IF (LAPACK_LIBRARY)

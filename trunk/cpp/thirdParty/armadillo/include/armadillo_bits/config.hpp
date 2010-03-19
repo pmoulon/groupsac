@@ -23,9 +23,9 @@
 // #define ARMA_HAVE_LOG1P
 // #define ARMA_HAVE_GETTIMEOFDAY
 
-// #define ARMA_USE_ATLAS
-// #define ARMA_USE_LAPACK
-// #define ARMA_USE_BLAS
+//#define ARMA_USE_ATLAS
+#define ARMA_USE_LAPACK
+#define ARMA_USE_BLAS
 // #define ARMA_USE_BOOST
 // #define ARMA_USE_BOOST_DATE
 

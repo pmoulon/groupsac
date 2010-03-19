@@ -8,9 +8,9 @@
 SET(BLAS_NAMES ${BLAS_NAMES} blas)
 FIND_LIBRARY(BLAS_LIBRARY
   NAMES ${BLAS_NAMES}
-  PATHS /usr/lib64 /usr/lib /usr/local/lib64 /usr/local/lib
+  PATHS /usr/lib64 /usr/lib /usr/local/lib64 /usr/local/lib ${CMAKE_SOURCE_DIR}/thirdParty/windowsLib
   )
-
+  
 IF (BLAS_LIBRARY)
   SET(BLAS_LIBRARIES ${BLAS_LIBRARY})
   SET(BLAS_FOUND "YES")
@@ -18,6 +18,14 @@ ELSE (BLAS_LIBRARY)
   SET(BLAS_FOUND "NO")
 ENDIF (BLAS_LIBRARY)
 
+if (WIN32)
+FIND_LIBRARY(LIB_F2C_LIBRARY
+  NAMES libf2c
+  PATHS ${CMAKE_SOURCE_DIR}/thirdParty/windowsLib
+  )
+  SET(BLAS_LIBRARIES ${BLAS_LIBRARY} ${LIB_F2C_LIBRARY})
+  SET(BLAS_FOUND "YES")
+ENDIF (WIN32)
 
 IF (BLAS_FOUND)
    IF (NOT BLAS_FIND_QUIETLY)
