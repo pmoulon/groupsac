@@ -57,14 +57,16 @@ public :
   *
   * \param[in] model (The model(s) that fit the data).
   * \param[in] candidates (The input data).
+  * \param[in] threshold (To evaluate if the candidates is an Inlier or Outlier)
   *
   * \return The list of point that are considered as inliers
-  * \ /!\ Note we don't have a criteria or threshold to consider inlier/outlier spaces
   */
-  static vector<int> defaultEvaluator(vector<Model> & model, const T & candidates, double threshold)
+  static vector<int> defaultEvaluator(vector<Model> & model,
+                                      const T & candidates,
+                                      double threshold)
   {
     vector<int> inliers;
-    // For each model compute the number of inliers and the indices of the inliers.
+    // For each model compute the number of inliers and the index of the inliers
     // Return the longest inliers vector.
     // must use the pointToLineDist.h file.
     for (size_t i=0; i < model.size(); ++i)

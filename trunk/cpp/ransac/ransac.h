@@ -8,8 +8,16 @@ using namespace std;
 namespace groupsac  {
 namespace ransac  {
 
-// return the minimal rounds needed for a given data set size and a given inlier number
-int ransac_rounds_needed(int max_rounds, int min_sample_num, double l1mp,int datum_num,int inlier_num)
+// return the minimal rounds needed for a given data set size and a given inlier
+//  number
+int ransac_rounds_needed
+  (
+    int max_rounds,
+    int min_sample_num,
+    double l1mp,
+    int datum_num,
+    int inlier_num
+   )
 {
   // inlier point probability
   double w = inlier_num / datum_num;
@@ -34,11 +42,18 @@ bool  default_fun_termination
     int iPutativesNumber
   )
 {
-    static int rounds_needed; //Todo replace it by a function variable (to be sure it works in multithread context)
+    static int rounds_needed; //Todo replace it by a function variable 
+    // (to be sure it works in multithread context)
     if ( inliers.size() > best_inliers.size() ) {
         best_inliers = inliers;
-        rounds_needed = ransac_rounds_needed(max_rounds, iSolverMinimalSamples, logConfidence, iPutativesNumber, inliers.size()); //Todo : to define
-        cout<<"global round="<<round<<"\tbest="<<best_inliers.size()<<"\trounds_needed="<<rounds_needed<<endl;
+        rounds_needed = ransac_rounds_needed(max_rounds,
+                                            iSolverMinimalSamples,
+                                            logConfidence,
+                                            iPutativesNumber,
+                                            inliers.size());
+        cout<<"global round="<<round
+            <<"\tbest="<<best_inliers.size()
+            <<"\trounds_needed="<<rounds_needed<<endl;
     }
     return round >= rounds_needed;
 }
@@ -53,7 +68,13 @@ vector<int> default_fun_candidates(int nbCandidates, int round)
 }
 
 // ransac: the common routine for RANSAC
-template<typename Data, typename DataExtractor, typename Solver, typename Evaluator, typename CandidatesSelector, typename Sampler, typename Termination>
+template< typename Data,
+          typename DataExtractor,
+          typename Solver,
+          typename Evaluator,
+          typename CandidatesSelector,
+          typename Sampler,
+          typename Termination >
 void  Ransac_RobustEstimator
   (
     const Data & data,      // the input data
@@ -61,7 +82,8 @@ void  Ransac_RobustEstimator
     int iPutativesNumber,   // the number of putatives
     const Solver & solver,  // compute the underlying model given a sample set
     const Evaluator & evaluator,  // the function to evaluate a given model
-    const CandidatesSelector & candidatesSelector,  // the function to select candidates from all data points
+    //func to select candidates from data pts
+    const CandidatesSelector & candidatesSelector,
     const Sampler & sampler,  // the sampling function
     const Termination & fun_termination,  // the termination function
     int imax_rounds,          // the maximum rounds for RANSAC routine
@@ -81,16 +103,22 @@ void  Ransac_RobustEstimator
   {
     ++round;
     if ( (round%100) == 0 ) {
-        cout<<"global round=" << round << "\tbest=" << best_inliers.size() << endl;
+        cout<<"global round=" << round
+            << "\tbest=" << best_inliers.size() << endl;
     }
 
-    vector<int> candidates = candidatesSelector(data.n_rows, round);         // get the candidates for sampling
-    vector<int> sampled = sampler(candidates, solver.get_MINIMUM_SAMPLES());// get sample indices from candidates
+    // get the candidates for sampling
+    vector<int> candidates = candidatesSelector(data.n_rows, round);
+    // get sample indices from candidates
+    vector<int> sampled = sampler(candidates, solver.get_MINIMUM_SAMPLES());
 
     // For GroupSAC, return inlier in the current group configuration
     vector<typename Solver::ModelType> vec_model;
-    solver.solve( extractor(data,sampled) , vec_model); // compute the new model
-    vector<int> inliers = evaluator(vec_model, extractor(data,candidates), ransac_threshold(1,sigma)); // compute the inliers for the array of models.
+    // compute the new model
+    solver.solve( extractor(data,sampled) , vec_model);
+    // compute the inliers for the array of models.
+    vector<int> inliers = evaluator(vec_model, extractor(data,candidates),
+                                    ransac_threshold(1,sigma));
     veri_num += candidates.size();
 
     if( fun_termination(best_inliers, inliers,
@@ -105,7 +133,9 @@ void  Ransac_RobustEstimator
       vector<typename Solver::ModelType> vec_model_finalize;
       solver.solve( extractor(data,sampled), vec_model_finalize);
       // compute the inliers for the array of model.
-      vector<int> inliers = evaluator(vec_model_finalize, extractor(data,candidates), ransac_threshold(1,sigma));
+      vector<int> inliers = evaluator(vec_model_finalize,
+                                      extractor(data,candidates),
+                                      ransac_threshold(1,sigma));
       veri_num += veri_num + candidates.size();
       cout<< "quiting ransac...found : " << best_inliers.size()
           << " inliers after : " << round << " rounds" << endl;
