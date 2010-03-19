@@ -1,0 +1,233 @@
+/*!
+\mainpage
+
+\htmlonly
+
+<br>
+<p>
+<li>
+This is the technical documentation -- the <a href="../docs_user/index.html" target="_top">user documentation is over here</a>
+</li>
+<br>
+<li>
+For a quick tutorial see <i>examples/example1.cpp</i>
+</li>
+</p>
+<br>
+<hr>
+<br>
+
+<table style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td style="vertical-align: top;">
+<b>Main class hierarchies:</b>
+<ul>
+<li>Base &lt;- Mat</li>
+<li>Base &lt;- Mat &lt;- Col</li>
+<li>Base &lt;- Mat &lt;- Row</li>
+<li>Base &lt;- Glue</li>
+<li>Base &lt;- Op</li>
+<li>Base &lt;- eGlue</li>
+<li>Base &lt;- eOp</li>
+<li>Base &lt;- subview</li>
+<li>Base &lt;- subview &lt;- subview_col</li>
+<li>Base &lt;- subview &lt;- subview_row</li>
+<li>Base &lt;- diagview</li>
+<br>
+<li>BaseCube &lt;- Cube</li>
+<li>BaseCube &lt;- GlueCube</li>
+<li>BaseCube &lt;- OpCube</li>
+<li>BaseCube &lt;- eGlueCube</li>
+<li>BaseCube &lt;- eOpCube</li>
+<li>BaseCube &lt;- subview_cube</li>
+<br>
+<li>field</li>
+<li>field &lt;- subview_field</li>
+</ul>
+</td>
+<td style="vertical-align: top;">
+&nbsp;
+<br>
+</td>
+<td style="vertical-align: top;">
+<b>Main helper classes:</b>
+<ul>
+<li>diskio</li>
+<li>glue_times</li>
+<li>unwrap</li>
+<li>unwrap_check</li>
+<li>partial_unwrap</li>
+<li>Proxy</li>
+<br>
+
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+
+<br>
+<p>
+<b>Matrix and vector types:</b>
+
+<ul>
+
+<li>
+'Mat' is the templated matrix class, with column-major ordering of data (i.e. column by column).
+</li>
+<br>
+
+<li>
+'Col' and 'Row' are the templated column vector and row vector classes, respectively.
+The vector classes are derived from the 'Mat' class.
+An instance of a 'Row' is effectively treated as a 'Mat' comprised of one row.
+Similarly, 'Col' is treated as 'Mat' comprised of one column.
+Functions which expect 'Mat' as an input can also use 'Row' and 'Col',
+where it mathematically makes sense -- an error at run-time is given where incorrect usage is detected.
+</li>
+<br>
+
+<li>
+'Cube' is the templated cube class (set of matrices which uses contiguous memory, or "3D" matrices).
+</li>
+<br>
+
+<li>
+'Mat&lt;double&gt;' has been typedefed as 'mat'.
+'Col&lt;double&gt;' has been typedefed as 'vec' and 'colvec'.
+'Row&lt;double&gt;' has been typedefed as 'rowvec'.
+'Cube&lt;double&gt;' has been typedefed as 'cube'.
+
+See <i>include/armadillo_bits/typedef.hpp</i> for more typedefs.
+</li>
+
+<br>
+
+<li>
+A scalar is treated as a 1x1 matrix during assignment.
+Hence <b>mat&nbsp;X(5,10);&nbsp;X&nbsp;=&nbsp;20;</b> will result in <b>X</b> having a size of 1x1, rather than 5x10.
+This is the same as what happens in Matlab/Octave.
+</li>
+<br>
+</ul>
+</p>
+
+<p>
+<b>In order to have ease of use and a straightforward user interface,
+some trade-offs between verbosity, speed and memory efficiency are present:</b>
+<ul>
+<li>
+To considerably speed up handling of small vectors and matrices,
+while at the same time allowing dynamic re-sizing (e.g. to load matrices of unknown size from disk),
+each matrix has a certain amount of memory pre-allocated directly in the definition of the 'Mat' class.
+The 'new' operator is called only if the required size of the matrix does not fit into the pre-allocated memory.
+The pre-allocation technique was used instead of requiring the user to hard-code matrix sizes.
+</li>
+<br>
+<li>
+Accessors for simple data, such as the number of rows and columns, are not used, e.g. <b>X.rows()</b>.
+Instead, read-only publically accessible members are provided, e.g. <b>X.n_rows</b>.
+This was done with the aim of improving readbility of user code with many loops.
+(As a sidenote, <b>X.rows(...)</b> is used to access sub-matrices of <b>X</b>).
+</li>
+<br>
+<li>
+Unsigned integers are used (of type 'u32') for loops and the storage of sizes.
+This avoids the need to account for negative values during bounds checks.
+</li>
+<br>
+</ul>
+</p>
+
+<p>
+<b>Debugging:</b>
+<ul>
+<li>
+<b>Bounds and other checks are enabled by default</b>.
+They can be turned off by defining <b>ARMA_NO_DEBUG</b> prior to including <i>armadillo</i>
+(preferably in the Makefile file or the command line, e.g. g++ -DARMA_NO_DEBUG ...).
+The reasoning here is that bounds checks should be turned off <b>only</b> when the user is satisfied that their code is working correctly
+(i.e. thoroughly debugged).
+</li>
+<br>
+
+<li>
+<b>Low level library debugging</b> can be aided by defining <b>ARMA_EXTRA_DEBUG</b> prior to including <i>armadillo</i>.
+Note that defining ARMA_NO_DEBUG will automatically undefine ARMA_EXTRA_DEBUG (see <i>armadillo_bits/debug.hpp</i>).
+</li>
+<br>
+</ul>
+</p>
+
+<p>
+<b>External libraries:</b>
+<ul>
+<li>
+To avoid reinventing a few wheels, Armadillo can leverage ATLAS, LAPACK, BLAS and Boost libraries.
+While the presence of these libraries is not mandatory, the functionality of Armadillo will be reduced without them.
+Operations such as matrix multiplication will still work,
+however more involved operations such as matrix inversion of eigenvalue decomposition require ATLAS or LAPACK.
+</li>
+<br>
+</ul>
+</p>
+
+
+<p>
+<b>Delayed evaluation via expression templates:</b>
+
+<ul>
+<li>
+Many operations (invoked through unary or binary operators) are not immediately executed, allowing more operations to be queued.
+The queued operations are executed (possibly by combining several operations) when the 'Mat'
+constructor or assignment operator is invoked.
+In many cases this occurs at compile time.
+<ul>
+<p>
+<b>[TODO: update example to reflect new framework]</b>
+<br>
+As an example, when the compiler evaluates the line
+<b>mat&nbsp;Z&nbsp;=&nbsp;A&nbsp;+&nbsp;B&nbsp;+&nbsp;C</b>,
+the line is converted, at compile time, to be
+<b>mat&nbsp;Z&nbsp;=&nbsp;X</b>,
+where <b>X</b> is of type <b>Glue&lt;&nbsp;Glue&lt;mat,&nbsp;mat,&nbsp;glue_plus&gt;,&nbsp;mat,&nbsp;glue_plus&gt;</b>.
+The constructor for the 'Mat' class then uses the last template argument to call
+<b>glue_plus::apply(*this,&nbsp;X)</b>,
+which sets the size of <b>Z</b> and evaluates <b>A&nbsp;+&nbsp;B&nbsp;+&nbsp;C</b> in one loop (i.e. no temporary matrices are created).
+</p>
+<p>
+The recursive template type <b>Glue&lt;&nbsp;glue_data&lt;mat,&nbsp;mat,&nbsp;glue_plus&gt;,&nbsp;mat,&nbsp;glue_plus&gt;</b>
+is constructed via repeated invocations of <b>operator+()</b>.
+First, <b>operator+(mat,mat)</b> is called, which returns an object of type <b>Glue&lt;mat,&nbsp;mat,&nbsp;glue_plus&gt;</b>.
+This object is then fed to <b>operator+(Glue&lt;T1,T2,glue_type&gt;,&nbsp;mat)</b> which returns an object of type
+<b>Glue&lt;&nbsp;Glue&lt;mat,&nbsp;mat,&nbsp;glue_plus&gt;,&nbsp;mat,&nbsp;glue_plus&gt;</b>.
+</p>
+<p>Note that the compiler can optimise away the temporary object <b>X</b> as well as the intermediate object resulting
+from calling <b>operator+()</b> the first time.
+Furthermore, the single loop which evaluates <b>A&nbsp;+&nbsp;B&nbsp;+&nbsp;C</b> can be inlined.
+</p>
+</ul>
+</li>
+<br>
+<li>
+Other types of delayed operation are queued unary operations.
+One example is <b>max&nbsp;Z&nbsp;=&nbsp;inv(diagmat(A))</b>, which has a temporary object of type
+<b>Op&lt;&nbsp;Op&lt;mat,&nbsp;op_diagmat&gt;,&nbsp;op_inv&gt;</b>.
+</li>
+<br>
+<li>
+The 'unwrap' class is used internally by many functions to create a 'Mat' object out of 'Op' or 'Glue' objects.
+If a 'Mat' object is fed to 'unwrap', no copying is done.
+</li>
+<br>
+<li>
+The 'Base' class is used for type-safe downcasting in functions that restrict their input(s) to be classes that are derived from 'Base'.
+This includes 'Mat', 'Op' 'Glue', 'diagview' and 'subview' classes.
+</li>
+<br>
+</ul>
+</p>
+
+\endhtmlonly
+*/

@@ -1,0 +1,8 @@
+Project: Armadillo
+URL: http://arma.sourceforge.net
+License: GPL3/LGPL3
+Upstream version: 0.9.4
+
+Local modifications:
+
+  * Force to include BLAS and LAPACK library under windows
