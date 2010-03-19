@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <memory>
 using namespace std;
 
 #include "ransac/ransac.h"
@@ -20,16 +21,11 @@ using namespace arma;
 // | :: vec
 
 //-- Temporary function (Must be defined more generally).
-//---- Deterministic sampler
-//---- Random sampler
+//---- (not yet done) Deterministic sampler
+//---- x Random sampler
 template <typename T>
 vector<int> sampler(const T & candidates, int MININUM_SAMPLES)
 {
-  /*vector<int> array;
-  array.push_back(0);
-  array.push_back(1);
-  return array;*/
-
   vector<int> array;
   int i = 0;
   std::set<int> sample_set;
@@ -61,23 +57,32 @@ T extractor(const T & data, const vector<int> & sampled)
 
 int main()
 {
-  //-- Create the input solver :
-  estimators::Solver<mat,vec> * ptrSolver = new estimators::lineFittingSolver<mat,vec>;
+  //-- Create the input solver (use auto_ptr for automatic delete of the object):
+  auto_ptr< estimators::Solver<mat,vec> > ptrSolver(new estimators::lineFittingSolver<mat,vec>);
 
   //-- Create input data
   //mat dataPoints = "1 2; 2 4; 2 5; 3 6; 4 7";//"1 6; 2 5; 3 7; 4 10";
   mat dataPoints = "0 0; 1 1; 2 2; 3 3";
-  /*vector<vec> models;
+  
+  /*
+  //-- Example : Show how to use the solver framework (To put in a unit test)
+  mat dataPoints = "0 0; 1 1; 2 2; 3 3";
+  vector<vec> models;
+  estimators::Solver<mat,vec> * ptrSolver = new estimators::lineFittingSolver<mat,vec>;
   ptrSolver->solve(dataPoints, models);
   ((estimators::lineFittingSolver<mat,vec>*)ptrSolver)->defaultEvaluator(models, dataPoints, 2.0);
+  delete ptrSolver;
+  // Assert models.size == 1;
+  // Assert estimated values. 
   */
+  
 
   ransac::Ransac_RobustEstimator
   (
     dataPoints, // the input data
     extractor<mat>, // How select sampled point from indices
     3,  // the number of putatives data ( ideally dataPoints.cols() )
-    *ptrSolver,  // compute the underlying model given a sample set
+    *(ptrSolver.get()),  // compute the underlying model given a sample set
     estimators::lineFittingSolver<mat,vec>::defaultEvaluator,  // the function to evaluate a given model
     ransac::default_fun_candidates,  // the function to select candidates from all data points
     sampler< vector<int> >, // the sampling function
@@ -87,7 +92,6 @@ int main()
   );
 
 
-  delete ptrSolver;
 
   return 0;
 }
