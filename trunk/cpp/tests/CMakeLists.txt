@@ -9,6 +9,7 @@ TARGET_LINK_LIBRARIES(mainTestRansac_LineFitting
   ${CMAKE_SOURCE_DIR}/thirdParty/windowsLib/blas.lib)
 ELSE (WIN32)
 ADD_EXECUTABLE(mainTestRansac_LineFitting mainTestRansac_LineFitting.cpp)
-#TARGET_LINK_LIBRARIES(mainTestRansac_LineFitting estimators ransac)
+#lapack and blas must be installed on the machine
+TARGET_LINK_LIBRARIES(mainTestRansac_LineFitting lapack blas)
 ENDIF (WIN32)
 

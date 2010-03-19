@@ -175,8 +175,8 @@ ARMA_CHECK_PROTO("gettimeofday" ""    "sys/time.h" ARMA_HAVE_GETTIMEOFDAY)
 MESSAGE(STATUS "Generating 'include/armadillo_bits/config.hpp'")
 CONFIGURE_FILE(include/armadillo_bits/config.hpp.cmake include/armadillo_bits/config.hpp)
 
-MESSAGE(STATUS "Generating 'examples/Makefile'")
-CONFIGURE_FILE(examples/Makefile.cmake examples/Makefile)
+#MESSAGE(STATUS "Generating 'examples/Makefile'")
+#CONFIGURE_FILE(examples/Makefile.cmake examples/Makefile)
 
 
 IF(ARMA_USE_BOOST STREQUAL true)
