@@ -44,10 +44,10 @@ bool  default_fun_termination
 }
 
 // default fun_candidates returns all the point indices (0-based) as candidates
-vector<int> default_fun_candidates(vector<int> & candidates, int round)
+vector<int> default_fun_candidates(int nbCandidates, int round)
 {
     vector<int> indices;
-    for (unsigned int i=0; i<candidates.size(); i++)
+    for (unsigned int i=0; i<nbCandidates; ++i)
         indices.push_back(i);
     return indices;
 }
@@ -73,11 +73,6 @@ void  Ransac_RobustEstimator
   double l1mp = log(1.0 - confidence);
   double sigma = 0.1; //Todo(pmoulon) MUST BE A PARAMETER
 
-  //-- Build initial candidates indices
-  vector<int> array;
-  for(size_t i=0; i < data.n_rows; ++i)
-    array.push_back(i);
-
   // the main ransac routine
   bool success = false;     // whether RANSAC is successful at last
   int round = 0;            // current round
@@ -89,7 +84,7 @@ void  Ransac_RobustEstimator
         cout<<"global round=" << round << "\tbest=" << best_inliers.size() << endl;
     }
 
-    vector<int> candidates = candidatesSelector(array, round);         // get the candidates for sampling
+    vector<int> candidates = candidatesSelector(data.n_rows, round);         // get the candidates for sampling
     vector<int> sampled = sampler(candidates, solver.get_MINIMUM_SAMPLES());// get sample indices from candidates
 
     // For GroupSAC, return inlier in the current group configuration
