@@ -13,7 +13,7 @@ void TestRegistry::addTest (Test *test)
 
 int TestRegistry::runAllTests (TestResult& result) 
 {
-	instance ().run (result);
+	return instance ().run (result);
 }
 
 
