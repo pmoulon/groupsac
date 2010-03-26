@@ -53,7 +53,7 @@ public :
   }
 
   /**
-  * Return the candidates that are estmated as inliers to the best model
+  * Return the candidates that are estimated as inliers to the best model
   *
   * \param[in] model (The model(s) that fit the data).
   * \param[in] candidates (The input data).
@@ -76,7 +76,7 @@ public :
       {
         double dist = pt2LineDist( modelToTest, trans(candidates.row(j)) );
         if (dist < threshold)
-          inliers.push_back(i);
+          inliers.push_back(j);
       }
     }
     return inliers;
