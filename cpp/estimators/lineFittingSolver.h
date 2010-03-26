@@ -32,15 +32,14 @@ public :
       vec b(candidates.n_rows);
       mat A(candidates.n_rows, 2);
       b = candidates.col(1);
-      A.col(0).fill(1.0);
-      A.col(1) = candidates.col(0);
+      A.col(0) = candidates.col(0);
+      A.col(1).fill(1.0);
 
       // Compute least-squares solution:
       vec X;
       if ( ::solve(X, A, b) )
       {
         cout << "solution:" << endl << X << endl;
-        std::swap(X(0), X(1));
         model.push_back(X);
         return true;
       }
