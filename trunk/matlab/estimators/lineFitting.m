@@ -9,8 +9,7 @@ function [ab] = lineFitting(points)
 
 % Build matrices to solve Ax = b problem:
 y = points(:,2);
-x = [ones(size(points,1),1) points(:,1)];
+x = [points(:,1) ones(size(points,1),1)];
 
 %Compute least square solution
-ba=x\y;
-ab = ba(end:-1:1);
+ab=x\y;
