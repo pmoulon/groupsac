@@ -1,27 +1,25 @@
 #
 # (C) 2010 Groupsac
 
+# Library 
 IF (WIN32)
-ADD_EXECUTABLE(mainTestRansac_LineFitting mainTestRansac_LineFitting.cpp)
-TARGET_LINK_LIBRARIES(mainTestRansac_LineFitting
-  ${CMAKE_SOURCE_DIR}/thirdParty/windowsLib/libf2c.lib
-  ${CMAKE_SOURCE_DIR}/thirdParty/windowsLib/lapack.lib
-  ${CMAKE_SOURCE_DIR}/thirdParty/windowsLib/blas.lib)
+  SET(LAPACK_BLAS_LIB ${LAPACK_BLAS_LIB} 
+    ${CMAKE_SOURCE_DIR}/thirdParty/windowsLib/libf2c.lib
+    ${CMAKE_SOURCE_DIR}/thirdParty/windowsLib/lapack.lib
+    ${CMAKE_SOURCE_DIR}/thirdParty/windowsLib/blas.lib)
 ELSE (WIN32)
-ADD_EXECUTABLE(mainTestRansac_LineFitting mainTestRansac_LineFitting.cpp)
-#lapack and blas must be installed on the machine
-TARGET_LINK_LIBRARIES(mainTestRansac_LineFitting lapack blas)
+  SET(LAPACK_BLAS_LIB ${LAPACK_BLAS_LIB} lapack blas)
 ENDIF (WIN32)
+
+ADD_EXECUTABLE(mainTestRansac_LineFitting mainTestRansac_LineFitting.cpp)
+TARGET_LINK_LIBRARIES(mainTestRansac_LineFitting ${LAPACK_BLAS_LIB})
 
 add_executable(testLineFittingSolver testLineFittingSolver.cpp)
 add_custom_target(testLineFittingSolver.run testLineFittingSolver)
-target_link_libraries(testLineFittingSolver "CppUnitLite")
-IF (WIN32)
-TARGET_LINK_LIBRARIES(testLineFittingSolver
-  ${CMAKE_SOURCE_DIR}/thirdParty/windowsLib/libf2c.lib
-  ${CMAKE_SOURCE_DIR}/thirdParty/windowsLib/lapack.lib
-  ${CMAKE_SOURCE_DIR}/thirdParty/windowsLib/blas.lib)
-ELSE (WIN32)
-TARGET_LINK_LIBRARIES(testLineFittingSolver lapack blas)
-ENDIF (WIN32)
+TARGET_LINK_LIBRARIES(testLineFittingSolver "CppUnitLite" ${LAPACK_BLAS_LIB})
 add_test(testLineFittingSolver testLineFittingSolver)
+
+add_executable(testFundamental7ptFittingSolver testFundamental7ptSolver.cpp)
+add_custom_target(testFundamental7ptFittingSolver.run testLineFittingSolver)
+TARGET_LINK_LIBRARIES(testFundamental7ptFittingSolver "CppUnitLite" ${LAPACK_BLAS_LIB})
+add_test(testFundamental7ptFittingSolver testFundamental7ptFittingSolver)
