@@ -11,6 +11,10 @@ using namespace arma;
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+// This Fundamental matrix solver is based on LIBMV open Source
+// computer vision library.
+// http://code.google.com/p/libmv/
+
 namespace groupsac  {
 namespace estimators  {
 
@@ -114,7 +118,7 @@ template<typename T>
 inline T Square(T x) {
   return x * x;
 }
-// WIP
+
 struct SampsonError {
   static double Error(const mat &F, const vec &x1, const vec &x2) {
     vec x(3),y(3);
@@ -124,7 +128,23 @@ struct SampsonError {
     vec F_x = F * x;
     vec Ft_y = trans(F) * y;
     return Square(dot(y,F_x)) /
-      (  Square(norm(F_x.submat(0,0,2,0),2)) + Square(norm(Ft_y.submat(0,0,2,0),2)));
+      (Square(F_x(0)) + Square(F_x(1))
+      + Square(Ft_y(0)) + Square(Ft_y(1)));
+  }
+};
+
+struct SymmetricEpipolarDistanceError {
+  static double Error(const mat &F, const vec &x1, const vec &x2) {
+  vec x(3),y(3);
+    x(0) = x1(0); x(1) = x1(1); x(2) = 1.0;
+    y(0) = x2(0); y(1) = x2(1); y(2) = 1.0;
+    // See page 288 equation (11.10) of HZ.
+    vec F_x = F * x;
+    vec Ft_y = trans(F) * y;
+    return Square(dot(y,F_x)) *
+      (1.0/(Square(F_x(0)) + Square(F_x(1)))
+      + 1.0/(Square(Ft_y(0)) + Square(Ft_y(1))))
+      / 4.0;// The divide by 4 is to make this match the sampson distance.
   }
 };
 
@@ -212,7 +232,6 @@ public :
           cout << endl <<"Model " << kk <<endl<<  model[kk] << endl;
         }
         return true;
-        //push_back model
       }
       else
       {
@@ -249,9 +268,6 @@ public :
           inliers.push_back(j);
       }
     }
-    
-    // TODO(pmoulon)
-
     return inliers;
   }
 };
