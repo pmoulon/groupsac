@@ -1,9 +1,9 @@
 /*
- * testLineFitting.cpp
+ * testFundamental7ptSolver.cpp
  *
- *   Created on: Mar 25, 2010
- *       Author: nikai
- *  Description: unit tests for line fitting
+ *   Created on: Apr 10, 2010
+ *       Author: pmoulon
+ *  Description: unit tests for fundamental 7point fitting
  */
 
 #include "CppUnitLite/TestHarness.h"
@@ -80,6 +80,15 @@ TEST ( Fundamental7ptFittingSolver, Fundamental7pt )
       DOUBLES_EQUAL(residual,0.0,1e-8);
     }
   }
+
+  //-- Inliers  
+  // Compute inliers indices
+  vector<int> inliersIndices = 
+    ((estimators::Fundamental7ptSolver<mat,mat>*)
+      ptrSolver.get())->defaultEvaluator(models, xy, 2.0);
+  CHECK(inliersIndices.size()==7);
+  for(unsigned int i=0;i<inliersIndices.size();++i)
+    CHECK(inliersIndices[i]==i);
 }
 
 

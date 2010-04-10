@@ -2,6 +2,7 @@
 #define GROUPSAC_ESTIMATORS_FUNDAMENTAL_7PT_H
 
 #include <iostream>
+#include <set>
 #include <vector>
 #include "armadillo/include/armadillo"
 #include "pointToLineDist.h"
@@ -253,22 +254,27 @@ public :
                                       const T & candidates,
                                       double threshold)
   {
-    vector<int> inliers;
+    vector< vector<int> > inliers(model.size());
+    int bestIndex=0;
     // For each model compute the number of inliers and the index of the inliers
     // Return the longest inliers vector.
-     for (size_t i=0; i < model.size(); ++i)
+    for (size_t i=0; i < model.size(); ++i)
     {
       const Model & modelToTest = model[i];
       for (size_t j=0; j < candidates.n_cols; ++j)
       {
-        vec x1 = candidates.submat(0,j,2,j);
-        vec x2 = candidates.submat(2,j,4,j);
+        vec x1 = candidates.submat(0,j,1,j);
+        vec x2 = candidates.submat(2,j,3,j);
         double dist = EpipolarDistanceError::Error(modelToTest,x1,x2);
-         if (dist < threshold)
-          inliers.push_back(j);
+         if ( abs(dist) < threshold)
+          inliers[i].push_back(j);
+      }
+      if ( i>0 && inliers[bestIndex].size() < inliers[i].size())
+      {
+        bestIndex=i;
       }
     }
-    return inliers;
+    return inliers[bestIndex];
   }
 };
 
