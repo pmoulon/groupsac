@@ -74,7 +74,7 @@ public :
       for (size_t j=0; j < candidates.n_rows; ++j)
       {
         double dist = pt2LineDist( modelToTest, trans(candidates.row(j)) );
-        if (dist < threshold)
+        if ( abs(dist) < threshold)
           inliers.push_back(j);
       }
     }

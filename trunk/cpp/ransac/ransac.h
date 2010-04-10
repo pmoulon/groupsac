@@ -75,7 +75,7 @@ template< typename Data,
           typename CandidatesSelector,
           typename Sampler,
           typename Termination >
-void  Ransac_RobustEstimator
+void Ransac_RobustEstimator
   (
     const Data & data,      // the input data
     const DataExtractor & extractor, // How extract indexed data from inputData
@@ -108,7 +108,7 @@ void  Ransac_RobustEstimator
     }
 
     // get the candidates for sampling
-    vector<int> candidates = candidatesSelector(data.n_rows, round);
+    vector<int> candidates = candidatesSelector(iPutativesNumber, round);
     // get sample indices from candidates
     vector<int> sampled = sampler(candidates, solver.get_MINIMUM_SAMPLES());
 
@@ -136,7 +136,8 @@ void  Ransac_RobustEstimator
       vector<int> inliers = evaluator(vec_model_finalize,
                                       extractor(data,candidates),
                                       ransac_threshold(1,sigma));
-      veri_num += veri_num + candidates.size();
+      //Handle the best model at most inliers size... But not better quality (minus residuals)
+      veri_num += candidates.size();
       cout<< "quiting ransac...found : " << best_inliers.size()
           << " inliers after : " << round << " rounds" << endl;
     }
