@@ -109,6 +109,35 @@ int SolveCubicPolynomial(const Real *coeffs, Real *solutions) {
                               solutions + 2);
 }
 
+// Return the square of a number.
+template<typename T>
+inline T Square(T x) {
+  return x * x;
+}
+// WIP
+struct SampsonError {
+  static double Error(const mat &F, const vec &x1, const vec &x2) {
+    vec x(3),y(3);
+    x(0) = x1(0); x(1) = x1(1); x(2) = 1.0;
+    y(0) = x2(0); y(1) = x2(1); y(2) = 1.0;
+    // See page 287 equation (11.9) of HZ.
+    vec F_x = F * x;
+    vec Ft_y = trans(F) * y;
+    return Square(dot(y,F_x)) /
+      (  Square(norm(F_x.submat(0,0,2,0),2)) + Square(norm(Ft_y.submat(0,0,2,0),2)));
+  }
+};
+
+struct EpipolarDistanceError {
+  static double Error(const mat &F, const vec &x1, const vec &x2) {
+	vec x(3),y(3);
+    x(0) = x1(0); x(1) = x1(1); x(2) = 1.0;
+    y(0) = x2(0); y(1) = x2(1); y(2) = 1.0;
+    // See page 287 equation (11.9) of HZ.
+    return dot( x, F * y);
+  }
+};
+
 // Compute the fundamental matrix from 7 points.
 // It's the minimal case.
 // It could compute one to three solution.
@@ -180,7 +209,7 @@ public :
         for (int kk = 0; kk < num_roots; ++kk)  {
           model.push_back(F1 + roots[kk] * F2);
           model[kk] /= model[kk](2,2);
-          cout << endl << model[kk] << endl;
+          cout << endl <<"Model " << kk <<endl<<  model[kk] << endl;
         }
         return true;
         //push_back model
@@ -208,6 +237,18 @@ public :
     vector<int> inliers;
     // For each model compute the number of inliers and the index of the inliers
     // Return the longest inliers vector.
+     for (size_t i=0; i < model.size(); ++i)
+    {
+      const Model & modelToTest = model[i];
+      for (size_t j=0; j < candidates.n_cols; ++j)
+      {
+        vec x1 = candidates.submat(0,j,2,j);
+        vec x2 = candidates.submat(2,j,4,j);
+        double dist = EpipolarDistanceError::Error(modelToTest,x1,x2);
+         if (dist < threshold)
+          inliers.push_back(j);
+      }
+    }
     
     // TODO(pmoulon)
 
