@@ -1,5 +1,5 @@
 % return a function handle for computing the fundamental matrix from a set of points
-function [fun_handle] = fundmat7ptEvaluator(xs1, xs2)
+function [fun_handle] = fundmat7ptSolver(xs1, xs2)
 
 fun_handle = @compute;
 

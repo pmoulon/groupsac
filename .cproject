@@ -489,18 +489,10 @@
 <useDefaultCommand>true</useDefaultCommand>
 <runAllBuilders>true</runAllBuilders>
 </target>
-<target name="testLineFittingSolver" path="cpp" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+<target name="testFundamental7ptFittingSolver.run" path="cpp" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 <buildCommand>make</buildCommand>
 <buildArguments>-f CMake.helper</buildArguments>
-<buildTarget>testLineFittingSolver</buildTarget>
-<stopOnError>true</stopOnError>
-<useDefaultCommand>true</useDefaultCommand>
-<runAllBuilders>true</runAllBuilders>
-</target>
-<target name="testFundamental7ptSolver.run" path="cpp" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-<buildCommand>make</buildCommand>
-<buildArguments>-f CMake.helper</buildArguments>
-<buildTarget>testFundamental7ptSolver.run</buildTarget>
+<buildTarget>testFundamental7ptFittingSolver.run</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
 <runAllBuilders>true</runAllBuilders>
@@ -994,18 +986,10 @@
 <useDefaultCommand>true</useDefaultCommand>
 <runAllBuilders>true</runAllBuilders>
 </target>
-<target name="testLineFittingSolver" path="cpp" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+<target name="testFundamental7ptFittingSolver.run" path="cpp" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 <buildCommand>make</buildCommand>
 <buildArguments>-f CMake.helper</buildArguments>
-<buildTarget>testLineFittingSolver</buildTarget>
-<stopOnError>true</stopOnError>
-<useDefaultCommand>true</useDefaultCommand>
-<runAllBuilders>true</runAllBuilders>
-</target>
-<target name="testFundamental7ptSolver.run" path="cpp" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-<buildCommand>make</buildCommand>
-<buildArguments>-f CMake.helper</buildArguments>
-<buildTarget>testFundamental7ptSolver.run</buildTarget>
+<buildTarget>testFundamental7ptFittingSolver.run</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
 <runAllBuilders>true</runAllBuilders>

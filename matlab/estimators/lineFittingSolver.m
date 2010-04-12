@@ -1,4 +1,4 @@
-function [ab] = lineFitting(points)
+function [ab] = lineFittingSolver(points)
 
 % Fit a 2D line with to a set of points.
 % {points} are represented as two column vectors corresponding to X/Y
