@@ -11,7 +11,7 @@ fun_handle = @evaluate;
         model = ab; % for line fitting, we only have a single model. But for fundamental matrix, we might have multiple models
         is_inliers = zeros(length(candidates), 1);
         for pi = 1:length(candidates)
-            if pt2LineDist(ab, points(pi, :)) <= err_tol
+            if lineFittingError(ab, points(pi, :)) <= err_tol
                 is_inliers(pi) = 1;
             end
         end

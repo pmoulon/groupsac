@@ -1,4 +1,4 @@
-function test_suite = testLineFitting
+function test_suite = testLineFittingSolver
 initTestSuite;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -6,7 +6,7 @@ function testNoNoise
 y = 5:3:50;
 x = 1:length(y);
 points = [x' y'];
-[ab] = lineFitting(points);
+[ab] = lineFittingSolver(points);
 assertElementsAlmostEqual(3, ab(1));
 assertElementsAlmostEqual(2, ab(2));
 

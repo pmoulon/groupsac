@@ -3,7 +3,7 @@ function [success, inliers, model] = ransacLineFitting(points, sigma)
 
 %% control parameters
 datum_num = size(points, 1);
-fun_compute = @(sampled) lineFitting(points(sampled,:));
+fun_compute = @(sampled) lineFittingSolver(points(sampled,:));
 fun_evaluate = lineFittingEvaluator(points, sigma);
 fun_candidates = -1;
 fun_sample = -1;
