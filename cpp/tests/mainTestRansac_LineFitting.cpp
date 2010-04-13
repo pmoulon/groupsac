@@ -41,16 +41,6 @@ vector<int> sampler(const T & candidates, int MININUM_SAMPLES)
   return array;
 }
 
-template<typename T>
-T extractor(const T & data, const vector<int> & sampled)
-{
-  mat test;
-  test.zeros(sampled.size(), data.n_cols);
-  for(size_t i=0; i < sampled.size(); ++i)
-    test.row(i) = data.row( sampled[i] );
-  return test;
-}
-
 //-- END -- Must now be defined
 //-------
 
@@ -80,7 +70,7 @@ int main()
   ransac::Ransac_RobustEstimator
   (
     dataPoints, // the input data
-    extractor<mat>, // How select sampled point from indices
+    estimators::lineFittingSolver<mat,vec>::extractor, // How select sampled point from indices
     3,  // the number of putatives data ( ideally dataPoints.cols() )
     *(ptrSolver.get()),  // compute the underlying model given a sample set
     estimators::lineFittingSolver<mat,vec>::defaultEvaluator,  // the function to evaluate a given model

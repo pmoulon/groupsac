@@ -124,39 +124,6 @@ TEST ( Fundamental7ptFittingSolver, SampsonError ) {
   DOUBLES_EQUAL(2.0 * estimators::Square(10. / 2.0), dists[5],1e-3);
 }
 
-TEST ( Fundamental7ptFittingSolver, SymmetricEpipolarDistanceError ) {
-
-  mat F=" 0 0 0; 0 0 -1; 0 1 0";
-  // Fundamental matrix corresponding to pure translation.
-
-  vec x0="0 0", y0="  0   0"; // Good match (at infinity).
-  vec x1="0 0", y1="100   0"; // Good match (no vertical disparity).
-  vec x2="0 0", y2="0.0 0.1"; // Small error (a bit of vertical disparity).
-  vec x3="0 0", y3="  0   1"; // Bigger error.
-  vec x4="0 0", y4="  0  10"; // Biggest error.
-  vec x5="0 0", y5="100  10"; // Biggest error with horizontal disparity.
-
-  double dists[6];
-  dists[0] = estimators::SymmetricEpipolarDistanceError::Error(F, x0, y0),
-  dists[1] = estimators::SymmetricEpipolarDistanceError::Error(F, x1, y1),
-  dists[2] = estimators::SymmetricEpipolarDistanceError::Error(F, x2, y2),
-  dists[3] = estimators::SymmetricEpipolarDistanceError::Error(F, x3, y3),
-  dists[4] = estimators::SymmetricEpipolarDistanceError::Error(F, x4, y4),
-  dists[5] = estimators::SymmetricEpipolarDistanceError::Error(F, x5, y5);
-
-  // The expected distance are two times (one per image) the distance from the
-  // point to the reprojection of the best triangulated point.  For this
-  // particular example this reprojection is the midpoint between the point and
-  // the epipolar line.
-  DOUBLES_EQUAL(0.0, dists[0],1e-8);
-  DOUBLES_EQUAL(0.0, dists[1],1e-8);
-  DOUBLES_EQUAL(2.0 * estimators::Square(0.1 / 2.0), dists[2],1e-3);
-  DOUBLES_EQUAL(2.0 * estimators::Square(1.0 / 2.0), dists[3],1e-3);
-  DOUBLES_EQUAL(2.0 * estimators::Square(10. / 2.0), dists[4],1e-3);
-  DOUBLES_EQUAL(2.0 * estimators::Square(10. / 2.0), dists[5],1e-3);
-}
-
-
 /* ************************************************************************* */
 int main() { TestResult tr; return TestRegistry::runAllTests(tr);}
 /* ************************************************************************* */
