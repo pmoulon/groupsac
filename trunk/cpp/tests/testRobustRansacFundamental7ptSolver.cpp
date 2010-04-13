@@ -52,19 +52,6 @@ vector<int> sampler(const T & candidates, int MININUM_SAMPLES)
   return array;
 }
 
-// At term extractor will be defined into Solver class
-// to force the user to format the input data as required.
-template<typename T>
-T extractor(const T & data, const vector<int> & sampled)
-{
-  mat test;
-  test.zeros(data.n_rows,sampled.size());
-  for(size_t i=0; i < sampled.size(); ++i)
-  {
-    test.col(i) = data.col( sampled[i] );
-  }
-  return test;
-}
 
 //-- END -- Must now be defined
 //-------
@@ -97,14 +84,14 @@ TEST ( Fundamental7ptFittingRobustSolver, Fundamental7pt )
     447 635 787 484;\
     971  91 1355 363;\
     1903   447 2163  743;\
-    1483 1555 1875 1715;"
+    1483 1555 1875 1715;";
 
   dataPoints=trans(dataPoints);
 
   ransac::Ransac_RobustEstimator
   (
     dataPoints, // the input data
-    extractor<mat>, // How select sampled point from indices
+    estimators::Fundamental7ptSolver<mat,mat>::extractor, // How select sampled point from indices
     dataPoints.n_cols,  // the number of putatives data ( ideally dataPoints.cols() )
     *(ptrSolver.get()),  // compute the underlying model given a sample set
     estimators::Fundamental7ptSolver<mat,mat>::defaultEvaluator,  // the function to evaluate a given model

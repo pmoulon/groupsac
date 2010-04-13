@@ -12,8 +12,14 @@ using namespace arma;
 namespace groupsac  {
 namespace estimators  {
 
-// Fit a 2D line with to a set of points
-// Specifically, find a and b in the model y = ax + b
+/// Fit a 2D line with to a set of points
+/// Specifically, find a and b in the model y = ax + b
+///
+/// Input data must be typed as follow :
+/// X0 Y0
+/// X1 Y1
+/// X... Y ...
+/// Internal extractor function allow to extract sampled data.
 template<typename T = mat, typename Model = vec>
 class lineFittingSolver : public Solver<T,Model>
 {
@@ -79,6 +85,23 @@ public :
       }
     }
     return inliers;
+  }
+  
+  /**
+    * Extract the sampled indices from the data container.
+    *
+    * \param[in] data (The input data).
+    * \param[in] samples (The indices of data to extract (line or row)).
+    *
+    * \return The sampled data.
+    */
+  static T extractor(const T & data, const vector<int> & sampled)
+  {
+    mat test;
+    test.zeros(sampled.size(), data.n_cols);
+    for(size_t i=0; i < sampled.size(); ++i)
+      test.row(i) = data.row( sampled[i] );
+    return test;
   }
 };
 

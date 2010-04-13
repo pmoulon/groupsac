@@ -134,21 +134,6 @@ struct SampsonError {
   }
 };
 
-struct SymmetricEpipolarDistanceError {
-  static double Error(const mat &F, const vec &x1, const vec &x2) {
-  vec x(3),y(3);
-    x(0) = x1(0); x(1) = x1(1); x(2) = 1.0;
-    y(0) = x2(0); y(1) = x2(1); y(2) = 1.0;
-    // See page 288 equation (11.10) of HZ.
-    vec F_x = F * x;
-    vec Ft_y = trans(F) * y;
-    return Square(dot(y,F_x)) *
-      (1.0/(Square(F_x(0)) + Square(F_x(1)))
-      + 1.0/(Square(Ft_y(0)) + Square(Ft_y(1))))
-      / 4.0;// The divide by 4 is to make this match the sampson distance.
-  }
-};
-
 struct EpipolarDistanceError {
   static double Error(const mat &F, const vec &x1, const vec &x2) {
 	vec x(3),y(3);
@@ -159,9 +144,16 @@ struct EpipolarDistanceError {
   }
 };
 
-// Compute the fundamental matrix from 7 points.
-// It's the minimal case.
-// It could compute one to three solution.
+/// Compute the fundamental matrix from 7 points.
+/// It's the minimal case.
+/// It could compute one to three solution.
+///
+/// Input data must be typed as follow (Image a and Image B):
+/// Xa0 Xa1
+/// Ya0 Ya1
+/// Xb0 Xb1
+/// Yb0 Yb1
+/// Internal extractor function allow to extract sampled data.
 template<typename T = mat, typename Model = mat>
 class Fundamental7ptSolver : public Solver<T,Model>
 {
@@ -275,6 +267,25 @@ public :
       }
     }
     return inliers[bestIndex];
+  }
+  
+  /**
+    * Extract the sampled indices from the data container.
+    *
+    * \param[in] data (The input data).
+    * \param[in] samples (The indices of data to extract (line or row)).
+    *
+    * \return The sampled data.
+    */
+  static T extractor(const T & data, const vector<int> & sampled)
+  {
+    mat test;
+    test.zeros(data.n_rows,sampled.size());
+    for(size_t i=0; i < sampled.size(); ++i)
+    {
+      test.col(i) = data.col( sampled[i] );
+    }
+    return test;
   }
 };
 
