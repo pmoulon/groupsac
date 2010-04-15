@@ -180,9 +180,6 @@ public :
   /// See groupsac::estimators::Solver
   bool solve(const T & candidates, vector<Model> & model) const
   {
-      cout << "Points used for the estimation:" << endl;
-      cout << candidates << endl;
-
       // Set up the homogeneous system Af = 0 from the equations x'T*F*x = 0.
       mat A(candidates.n_cols, 9);
       for (int i = 0; i < candidates.n_cols; ++i) {
@@ -237,7 +234,6 @@ public :
         for (int kk = 0; kk < num_roots; ++kk)  {
           model.push_back(F1 + roots[kk] * F2);
           model[kk] /= model[kk](2,2);
-          cout << endl <<"Model " << kk <<endl<<  model[kk] << endl;
         }
         return true;
       }

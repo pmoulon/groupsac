@@ -31,9 +31,6 @@ public :
   /// See groupsac::estimators::Solver
   bool solve(const T & candidates, vector<Model> & model) const
   {
-      cout << "Points used for the estimation:" << endl;
-      cout << candidates << endl;
-
       // Build matrices to solve Ax = b problem:
       vec b(candidates.n_rows);
       mat A(candidates.n_rows, 2);
@@ -45,7 +42,6 @@ public :
       vec X;
       if ( ::solve(X, A, b) )
       {
-        cout << "solution:" << endl << X << endl;
         model.push_back(X);
         return true;
       }
