@@ -26,6 +26,10 @@ public :
     */
   virtual bool solve(const T & candidates, vector<Model> & model)const =0;
 
+  /**
+  * How many points are required at least to compute a model
+  * \return the internal MINIMUM_SAMPLES value.
+  */
   virtual int get_MINIMUM_SAMPLES() const =0;
 };
 
