@@ -95,7 +95,7 @@ names = ['bt.000.png'
          'bt.006.png'];
 for n = 1:N
   fn = [fileparts(which(mfilename)) '/' names(n,:)];
-  fprintf('vgg_example_scene: loading [%s]\n', fn);
+  %fprintf('vgg_example_scene: loading [%s]\n', fn);
   view(n).I = imread(fn);
 end
 

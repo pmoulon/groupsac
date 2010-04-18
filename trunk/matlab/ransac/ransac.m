@@ -1,5 +1,5 @@
 function [round, success, best_inliers, best_model, veri_num] = ransac(datum_num, fun_compute, fun_evaluate, fun_candidates, fun_sample, fun_termination, fun_draw, ...
-    min_sample_num, max_rounds, confidence, gui)
+    min_sample_num, max_rounds, confidence, gui, verbose)
 % ranasc: the common routine for RANSAC
 %   datum_num           : the number of putatives
 %   fun_compute         : compute the underlying model given a sample set
@@ -35,7 +35,7 @@ best_inliers = [];            % the best inliers so far
 while 1
     
     round = round + 1;
-    if mod(round,100) == 0
+    if mod(round,100) == 0 && verbose > 0
         fprintf(1, 'global round=%d   \tbest=%d\n', round, length(best_inliers));
     end
     
@@ -44,7 +44,7 @@ while 1
     
     % For GroupSANC, return inlier in the current group configuration
     model = fun_compute(sampled);                     % compute the new model
-    inliers = fun_evaluate(model, candidates);        % compute the inliers for the new model.
+    [inliers ~] = fun_evaluate(model, candidates);        % compute the inliers for the new model.
     veri_num = veri_num + length(candidates);
     
     if gui && mod(round,round_per_draw) == 0
@@ -60,7 +60,9 @@ while 1
         model = fun_compute(best_inliers);
         [best_inliers best_model] = fun_evaluate(model, 1:datum_num);
         veri_num = veri_num + length(candidates);
-        fprintf(1, 'quiting ransac...found %d inliers after %d rounds\n', length(best_inliers), round);
+        if verbose > 0
+            fprintf(1, 'quiting ransac...found %d inliers after %d rounds\n', length(best_inliers), round);
+        end
         break;
     end
 end
@@ -71,7 +73,9 @@ end
         if length(inliers) > length(best_inliers)
             best_inliers = inliers;
             rounds_needed = ransac_rounds_needed(max_rounds, min_sample_num, l1mp, datum_num, length(inliers));
-            fprintf(1,'global round=%d   \tbest=%d \trounds_needed=%d\n', round, length(best_inliers), rounds_needed);
+            if verbose > 0
+                fprintf(1,'global round=%d   \tbest=%d \trounds_needed=%d\n', round, length(best_inliers), rounds_needed);
+            end
         end
         terminate = round >= rounds_needed;
     end

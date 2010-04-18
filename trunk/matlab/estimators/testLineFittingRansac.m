@@ -1,4 +1,4 @@
-function test_suite = testRansacLineFitting
+function test_suite = testLineFittingRansac
 initTestSuite;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -20,7 +20,7 @@ noise(1:2:end) = noise(1:2:end) * -1;
 pts(inlier_num+1:end, 2) = pts(inlier_num+1:end, 2) + noise ;
 
 % run ransac
-[success, inliers, model] = ransacLineFitting(pts, sigma);
+[success, inliers, model] = lineFittingRansac(pts, sigma);
 
 assertEqual(true, success);
 assertEqual((1:inlier_num)', inliers);
