@@ -43,8 +43,8 @@ TEST ( Fundamental7ptFittingSolver, demo )
 //------------------------------
 TEST ( Fundamental7ptFittingSolver, Fundamental7pt )
 {
-  cout<< endl << "[LineFittingSolver::Fundamental7pt]"  << endl << endl;
-  mat xy = 
+  cout<< endl<< "[Fundamental7ptFittingSolver::Fundamental7pt]"<< endl<< endl;
+  mat xy =
     "723 887 1251 1243;\
     1091 699 1603 923;\
     1691 811 2067 1031;\
@@ -81,9 +81,9 @@ TEST ( Fundamental7ptFittingSolver, Fundamental7pt )
     }
   }
 
-  //-- Inliers  
+  //-- Inliers
   // Compute inliers indices
-  vector<int> inliersIndices = 
+  vector<int> inliersIndices =
     ((estimators::Fundamental7ptSolver<mat,mat>*)
       ptrSolver.get())->defaultEvaluator(models, xy, 2.0);
   CHECK(inliersIndices.size()==7);
@@ -94,6 +94,7 @@ TEST ( Fundamental7ptFittingSolver, Fundamental7pt )
 
 TEST ( Fundamental7ptFittingSolver, SampsonError ) {
 
+  cout<< endl<< "[Fundamental7ptFittingSolver::SampsonError]"<< endl<< endl;
   mat F=" 0 0 0; 0 0 -1; 0 1 0";
   // Fundamental matrix corresponding to pure translation.
 
@@ -126,6 +127,8 @@ TEST ( Fundamental7ptFittingSolver, SampsonError ) {
 
 TEST ( Fundamental7ptFittingSolver, SymmetricEpipolarDistanceError ) {
 
+  cout<< endl << "[Fundamental7ptFittingSolver::SymmetricEpipolarDistanceError]"
+    << endl<< endl;
   mat F=" 0 0 0; 0 0 -1; 0 1 0";
   // Fundamental matrix corresponding to pure translation.
 

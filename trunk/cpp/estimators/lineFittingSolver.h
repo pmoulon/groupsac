@@ -1,6 +1,7 @@
 #ifndef GROUPSAC_ESTIMATORS_LINEFITTINGSOLVER_H
 #define GROUPSAC_ESTIMATORS_LINEFITTINGSOLVER_H
 
+#include <cassert>
 #include <iostream>
 #include <vector>
 #include "armadillo/include/armadillo"
@@ -66,23 +67,29 @@ public :
                                       const T & candidates,
                                       double threshold)
   {
-    vector<int> inliers;
+    assert(model.size() > 0);
+    vector< vector<int> > inliers(model.size());
+    int bestIndex = 0;
     // For each model compute the number of inliers and the index of the inliers
     // Return the longest inliers vector.
     // must use the pointToLineDist.h file.
-    for (size_t i=0; i < model.size(); ++i)
+    for (size_t i = 0; i < model.size(); ++i)
     {
       const Model & modelToTest = model[i];
-      for (size_t j=0; j < candidates.n_rows; ++j)
+      for (size_t j = 0; j < candidates.n_rows; ++j)
       {
         double dist = pt2LineDist( modelToTest, trans(candidates.row(j)) );
         if ( abs(dist) < threshold)
-          inliers.push_back(j);
+          inliers[i].push_back(j);
+      }
+      if ( i > 0 && inliers[bestIndex].size() < inliers[i].size())
+      {
+        bestIndex = i;
       }
     }
-    return inliers;
+    return inliers[bestIndex];
   }
-  
+
   /**
     * Extract the sampled indices from the data container.
     *

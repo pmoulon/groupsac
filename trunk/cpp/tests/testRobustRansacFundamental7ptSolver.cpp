@@ -10,6 +10,7 @@
 #include "estimators/Solver.h"
 #include "estimators/Fundamental7ptSolver.h"
 #include "ransac/ransac.h"
+#include "vgg/vgg_example_scene.h" // Importation of pre-computed data
 
 #include <vector>
 #include <set>
@@ -67,17 +68,20 @@ TEST ( Fundamental7ptFittingRobustSolver, demo )
 
 //------------------------------
 // Test :
-// - Fundamental7ptSolver on 7 points.
-// - Assert the validity of the computed models
-// - Assert fundamental matrix properties (det(F)=0, ...)
+// - Robust solver with Fundamental7ptSolver on 7 points.
+// - Assert the validity of the computed models.
+// - Assert inliers indexes are valid.
 //------------------------------
 TEST ( Fundamental7ptFittingRobustSolver, Fundamental7pt )
 {
+  cout<< endl<< "[Fundamental7ptFittingRobustSolver::Fundamental7pt]"
+    << endl<< endl;
   //-- Create the input solver (use auto_ptr for automatic delete of the object):
-  auto_ptr< estimators::Solver<mat,mat> > ptrSolver(new estimators::Fundamental7ptSolver<mat,mat>);
+  auto_ptr< estimators::Solver<mat,mat> > ptrSolver(
+    new estimators::Fundamental7ptSolver<mat,mat>);
 
   //-- Create input data
-  mat dataPoints = 
+  mat dataPoints =
     "723 887 1251 1243;\
     1091 699 1603 923;\
     1691 811 2067 1031;\
@@ -88,6 +92,10 @@ TEST ( Fundamental7ptFittingRobustSolver, Fundamental7pt )
 
   dataPoints=trans(dataPoints);
 
+  vector<int> inliers;
+  vector<mat> models;
+
+  CHECK(
   ransac::Ransac_RobustEstimator
   (
     dataPoints, // the input data
@@ -98,10 +106,89 @@ TEST ( Fundamental7ptFittingRobustSolver, Fundamental7pt )
     ransac::default_fun_candidates,  // the function to select candidates from all data points
     sampler< vector<int> >, // the sampling function
     ransac::default_fun_termination, // the termination function
-    100,  // the maximum rounds for RANSAC routine
+    10,  // the maximum rounds for RANSAC routine
+    inliers, // inliers to the final solution
+    models, // models array that fit input data
     0.95 // the confidence want to achieve at the end
-  );
+  ) == true);
+
+  CHECK(inliers.size()  == 7);
+  CHECK(models.size()   == 3);
 }
+
+//------------------------------
+// Test : (With VGG oxford group precomputed data).
+// - Robust solver with Fundamental7ptSolver on 7 points.
+// - Assert the validity of the computed models.
+// - Assert inliers indexes are valid.
+//------------------------------
+TEST ( Fundamental7ptFittingRobustSolver, Fundamental7pt_VGG )
+{
+  cout<< endl<< "[Fundamental7ptFittingRobustSolver::Fundamental7pt_VGG]"
+    << endl<< endl;
+
+  // Load data from pre-computed data from VGG oxford group
+  // Use view1P view2P
+  // Use view1x view2x
+  // Use Xi
+  mat F = vgg_F_from_P(view1P, view2P);
+
+  //-- Count how many point correspondence we could add from input data
+  int cpt = 0;
+  for (int i = 0; i< Xi.n_cols; ++i)
+  {
+    if (Xi(0,i) !=0 && Xi(1,i)!=0)
+      ++cpt;
+  }
+  //-- Parse point into Points coordinates container
+  mat dataPoints = zeros(4,cpt+1);
+  cpt = 0;
+  for (int i = 0; i< Xi.n_cols; ++i)
+  {
+    int n1 = Xi(0,i),
+        n2 = Xi(1,i);
+    if (n1 !=0 && n2!=0)
+    {
+      mat temp(4,1); temp.fill(0);
+      temp.submat(0,0,1,0) = view1x.col(n1-1); // -1 => matlab index
+      temp.submat(2,0,3,0) = view2x.col(n2-1);
+      dataPoints.col(cpt) = temp;
+      ++cpt;
+    }
+  }
+  int inlierExpectedNumber = cpt;
+  //-- Add one outlier
+  mat temp = "1; 200; 100; 2";
+  dataPoints.col(cpt) = temp;
+
+  //-- Create the input solver (use auto_ptr for automatic delete of the object):
+  auto_ptr< estimators::Solver<mat,mat> > ptrSolver(
+    new estimators::Fundamental7ptSolver<mat,mat>);
+
+  vector<int> inliers;
+  vector<mat> models;
+
+  CHECK(
+  ransac::Ransac_RobustEstimator
+  (
+    dataPoints, // the input data
+    estimators::Fundamental7ptSolver<mat,mat>::extractor, // How select sampled point from indices
+    dataPoints.n_cols,  // the number of putatives data
+    *(ptrSolver.get()),  // compute the underlying model given a sample set
+    estimators::Fundamental7ptSolver<mat,mat>::defaultEvaluator,  // the function to evaluate a given model
+    ransac::default_fun_candidates,  // the function to select candidates from all data points
+    sampler< vector<int> >, // the sampling function
+    ransac::default_fun_termination, // the termination function
+    1000,     // the maximum rounds for RANSAC routine
+    inliers,  // inliers to the final solution
+    models,   // models array that fit input data
+    0.95,     // the confidence want to achieve at the end
+    1.0       // noise standard deviation
+  ) == true);
+
+  CHECK(inliers.size() == inlierExpectedNumber);
+}
+
 
 /* ************************************************************************* */
 int main() { TestResult tr; return TestRegistry::runAllTests(tr);}

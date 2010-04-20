@@ -1,6 +1,7 @@
 #ifndef GROUPSAC_ESTIMATORS_FUNDAMENTAL_7PT_H
 #define GROUPSAC_ESTIMATORS_FUNDAMENTAL_7PT_H
 
+#include <cassert>
 #include <iostream>
 #include <set>
 #include <vector>
@@ -30,7 +31,7 @@ namespace estimators  {
 // The GSL cubic solver was used as a reference for this routine.
 // TODO(pmoulon) move to poly.h
 template<typename Real>
-int SolveCubicPolynomial(Real a, Real b, Real c, 
+int SolveCubicPolynomial(Real a, Real b, Real c,
                          Real *x0, Real *x1, Real *x2) {
   Real q = a * a - 3 * b;
   Real r = 2 * a * a * a - 9 * a * b + 27 * c;
@@ -89,7 +90,7 @@ int SolveCubicPolynomial(Real a, Real b, Real c,
       }
     }
     return 3;
-  } 
+  }
   Real sgnR = (R >= 0 ? 1 : -1);
   Real A = -sgnR * pow (fabs (R) + sqrt (R2 - Q3), 1.0/3.0);
   Real B = Q / A ;
@@ -202,7 +203,7 @@ public :
       {
         mat F1 = reshape(V.col(A.n_cols - 1),3,3);
         mat F2 = reshape(V.col(A.n_cols - 2),3,3);
-       
+
         // Then, use the condition det(F) = 0 to determine F. In other words, solve
         // det(F1 + a*F2) = 0 for a.
         double a = F1(0, 0), j = F2(0, 0),
@@ -214,7 +215,7 @@ public :
                g = F1(2, 0), p = F2(2, 0),
                h = F1(2, 1), q = F2(2, 1),
                i = F1(2, 2), r = F2(2, 2);
-       
+
         // Run fundamental_7point_coeffs.py to get the below coefficients.
         // The coefficients are in ascending powers of alpha, i.e. P[N]*x^N.
         double P[4] = {
@@ -225,11 +226,11 @@ public :
           a*o*q - b*m*r - c*n*p - d*k*r - e*l*p - f*j*q - g*l*n - h*j*o - i*k*m,
           j*n*r + k*o*p + l*m*q - j*o*q - k*m*r - l*n*p,
         };
-       
+
         // Solve for the roots of P[3]*x^3 + P[2]*x^2 + P[1]*x + P[0] = 0.
         double roots[3];
         int num_roots = SolveCubicPolynomial(P, roots);
-       
+
         // Build the fundamental matrix for each solution.
         for (int kk = 0; kk < num_roots; ++kk)  {
           model.push_back(F1 + roots[kk] * F2);
@@ -257,29 +258,30 @@ public :
                                       const T & candidates,
                                       double threshold)
   {
+    assert(model.size() > 0);
     vector< vector<int> > inliers(model.size());
-    int bestIndex=0;
+    int bestIndex = 0;
     // For each model compute the number of inliers and the index of the inliers
     // Return the longest inliers vector.
-    for (size_t i=0; i < model.size(); ++i)
+    for (size_t i = 0; i < model.size(); ++i)
     {
       const Model & modelToTest = model[i];
-      for (size_t j=0; j < candidates.n_cols; ++j)
+      for (size_t j = 0; j < candidates.n_cols; ++j)
       {
         vec x1 = candidates.submat(0,j,1,j);
         vec x2 = candidates.submat(2,j,3,j);
         double dist = EpipolarDistanceError::Error(modelToTest,x1,x2);
-         if ( abs(dist) < threshold)
+        if ( abs(dist) < threshold)
           inliers[i].push_back(j);
       }
-      if ( i>0 && inliers[bestIndex].size() < inliers[i].size())
+      if ( i > 0 && inliers[bestIndex].size() < inliers[i].size())
       {
-        bestIndex=i;
+        bestIndex = i;
       }
     }
     return inliers[bestIndex];
   }
-  
+
   /**
     * Extract the sampled indices from the data container.
     *

@@ -12,7 +12,9 @@ ELSE (WIN32)
 ENDIF (WIN32)
 
 ADD_EXECUTABLE(mainTestRansac_LineFitting mainTestRansac_LineFitting.cpp)
-TARGET_LINK_LIBRARIES(mainTestRansac_LineFitting ${LAPACK_BLAS_LIB})
+add_custom_target(mainTestRansac_LineFitting.run mainTestRansac_LineFitting)
+TARGET_LINK_LIBRARIES(mainTestRansac_LineFitting "CppUnitLite" ${LAPACK_BLAS_LIB})
+add_test(mainTestRansac_LineFitting mainTestRansac_LineFitting)
 
 add_executable(testLineFittingSolver testLineFittingSolver.cpp)
 add_custom_target(testLineFittingSolver.run testLineFittingSolver)
@@ -28,3 +30,4 @@ add_executable(testRobustRansacFundamental7ptSolver testRobustRansacFundamental7
 add_custom_target(testRobustRansacFundamental7ptSolver.run Fundamental7ptFittingRobustSolver)
 TARGET_LINK_LIBRARIES(testRobustRansacFundamental7ptSolver "CppUnitLite" ${LAPACK_BLAS_LIB})
 add_test(testRobustRansacFundamental7ptSolver testRobustRansacFundamental7ptSolver)
+
