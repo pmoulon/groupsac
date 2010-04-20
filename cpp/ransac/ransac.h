@@ -42,7 +42,7 @@ bool  default_fun_termination
     int iPutativesNumber
   )
 {
-    static int rounds_needed; //Todo replace it by a function variable 
+    static int rounds_needed; //Todo replace it by a function variable
     // (to be sure it works in multithread context)
     if ( inliers.size() > best_inliers.size() ) {
         best_inliers = inliers;
@@ -75,7 +75,7 @@ template< typename Data,
           typename CandidatesSelector,
           typename Sampler,
           typename Termination >
-void Ransac_RobustEstimator
+bool Ransac_RobustEstimator
   (
     const Data & data,      // the input data
     const DataExtractor & extractor, // How extract indexed data from inputData
@@ -87,19 +87,23 @@ void Ransac_RobustEstimator
     const Sampler & sampler,  // the sampling function
     const Termination & fun_termination,  // the termination function
     int imax_rounds,          // the maximum rounds for RANSAC routine
-    double confidence         // the confidence want to achieve at the end
+    // Output parameters :
+    vector<int> & vec_inliers,  // Inlier to the final solution
+    vector<typename Solver::ModelType> & vec_models, // Model(s) that fit the inlier array
+    // Statistical parameter
+    double confidence = 0.95, // the confidence want to achieve at the end
+    double sigma = 1.0        // noise standard deviation
   )
 {
   // parameters
   int veri_num = 0;  // the total number of verifications made
   double l1mp = log(1.0 - confidence);
-  double sigma = 0.1; //Todo(pmoulon) MUST BE A PARAMETER
 
   // the main ransac routine
-  bool success = false;     // whether RANSAC is successful at last
+  bool bSuccess = false;     // whether RANSAC is successful at last
   int round = 0;            // current round
   vector<int> best_inliers; // the best inliers so far
-  while(!success)
+  while(!bSuccess)
   {
     ++round;
     if ( (round%100) == 0 ) {
@@ -127,21 +131,23 @@ void Ransac_RobustEstimator
                           iPutativesNumber)
       )  // check the termination condition
     {
-      success = true;
+      bSuccess = true;
 
       // finalize the model and inliers
       vector<typename Solver::ModelType> vec_model_finalize;
-      solver.solve( extractor(data,sampled), vec_model_finalize);
+      solver.solve( extractor(data,best_inliers), vec_model_finalize);
       // compute the inliers for the array of model.
-      vector<int> inliers = evaluator(vec_model_finalize,
-                                      extractor(data,candidates),
-                                      ransac_threshold(1,sigma));
+      vec_inliers = evaluator(vec_model_finalize,
+                                extractor(data,candidates),
+                                ransac_threshold(1,sigma));
+      vec_models = vec_model_finalize;
       //Handle the best model at most inliers size... But not better quality (minus residuals)
       veri_num += candidates.size();
       cout<< "quiting ransac...found : " << best_inliers.size()
           << " inliers after : " << round << " rounds" << endl;
     }
   }
+  return bSuccess;
 }
 }; // namespace ransac
 }; // namespace groupsac
