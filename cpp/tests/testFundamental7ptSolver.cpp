@@ -52,7 +52,7 @@ TEST ( Fundamental7ptFittingSolver, Fundamental7pt )
     971  91 1355 363;\
     1903   447 2163  743;\
     1483 1555 1875 1715";
-  xy=trans(xy);
+  xy = trans(xy);
 
   vector<mat> models;
   auto_ptr< estimators::Solver<mat,mat> > ptrSolver
@@ -72,12 +72,15 @@ TEST ( Fundamental7ptFittingSolver, Fundamental7pt )
     for (size_t j=0; j < xy.n_cols; ++j)
     {
       vec A(2),B(2);
-      B(0) = xy(2,j);
-      B(1) = xy(3,j);
       A(0) = xy(0,j);
       A(1) = xy(1,j);
-      double residual = estimators::EpipolarDistanceError::Error(F,A,B);
-      DOUBLES_EQUAL(residual,0.0,1e-8);
+      B(0) = xy(2,j);
+      B(1) = xy(3,j);
+      // Test resisual value with Epipolar distance error functions :
+      DOUBLES_EQUAL(0.0,estimators::SampsonError::Error(F,A,B),1e-8);
+      DOUBLES_EQUAL(0.0,estimators::SymmetricEpipolarDistanceError::Error(F,A,B)
+        ,1e-8);
+      DOUBLES_EQUAL(0.0,estimators::EpipolarDistanceError::Error(F,A,B),1e-8);
     }
   }
 

@@ -8,7 +8,7 @@ namespace ransac  {
 //compute the threshold used in RANSAC
 double ransac_threshold(int codimension,float sigma)
 {
-  double threshold = 0.0f;
+  double threshold = 0.0;
   double sigma2 = sigma * sigma;
   switch (codimension)
   {

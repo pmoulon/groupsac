@@ -88,7 +88,8 @@ TEST ( Fundamental7ptFittingRobustSolver, Fundamental7pt )
     447 635 787 484;\
     971  91 1355 363;\
     1903   447 2163  743;\
-    1483 1555 1875 1715;";
+    1483 1555 1875 1715;\
+    0 1 100 125"; // outlier
 
   dataPoints=trans(dataPoints);
 
@@ -137,30 +138,31 @@ TEST ( Fundamental7ptFittingRobustSolver, Fundamental7pt_VGG )
   int cpt = 0;
   for (int i = 0; i< Xi.n_cols; ++i)
   {
-    if (Xi(0,i) !=0 && Xi(1,i)!=0)
+    if (Xi(0,i) != 0 && Xi(1,i) != 0)
       ++cpt;
   }
   //-- Parse point into Points coordinates container
-  mat dataPoints = zeros(4,cpt+1);
+  mat dataPoints = zeros(4,cpt+3); // + 3 outliers
   cpt = 0;
   for (int i = 0; i< Xi.n_cols; ++i)
   {
     int n1 = Xi(0,i),
         n2 = Xi(1,i);
-    if (n1 !=0 && n2!=0)
+    if (n1 != 0 && n2 != 0)
     {
-      mat temp(4,1); temp.fill(0);
-      temp.submat(0,0,1,0) = view1x.col(n1-1); // -1 => matlab index
+      mat temp = zeros(4,1);
+      temp.submat(0,0,1,0) = view1x.col(n1-1); // -1 => matlab index to c++
       temp.submat(2,0,3,0) = view2x.col(n2-1);
       dataPoints.col(cpt) = temp;
       ++cpt;
     }
   }
   int inlierExpectedNumber = cpt;
-  //-- Add one outlier
-  mat temp = "1; 200; 100; 2";
-  dataPoints.col(cpt) = temp;
-
+  //-- Add outliers
+  dataPoints.col(cpt) = mat("1; 200; 100; 2");cpt++;
+  dataPoints.col(cpt) = mat("30; 600; 10; 200");cpt++;
+  dataPoints.col(cpt) = mat("200; 6; 123; 65");
+  
   //-- Create the input solver (use auto_ptr for automatic delete of the object):
   auto_ptr< estimators::Solver<mat,mat> > ptrSolver(
     new estimators::Fundamental7ptSolver<mat,mat>);
