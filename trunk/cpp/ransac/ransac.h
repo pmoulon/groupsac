@@ -23,7 +23,7 @@ int ransac_rounds_needed
   double w = inlier_num / datum_num;
   // outlier sample probability
   double eps_log = log(1.0 - pow(w,min_sample_num));
-  if(inlier_num == 0 || eps_log == 0)
+  if (inlier_num == 0 || eps_log == 0 || inlier_num == datum_num)
     return max_rounds;
   else
     return std::min(max_rounds, int(ceil(l1mp / eps_log)) );

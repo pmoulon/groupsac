@@ -126,6 +126,7 @@ struct SampsonError {
     vec x(3),y(3);
     x(0) = x1(0); x(1) = x1(1); x(2) = 1.0;
     y(0) = x2(0); y(1) = x2(1); y(2) = 1.0;
+    swap(x,y);
     // See page 287 equation (11.9) of HZ.
     vec F_x = F * x;
     vec Ft_y = trans(F) * y;
@@ -140,6 +141,7 @@ struct SymmetricEpipolarDistanceError {
   vec x(3),y(3);
     x(0) = x1(0); x(1) = x1(1); x(2) = 1.0;
     y(0) = x2(0); y(1) = x2(1); y(2) = 1.0;
+    swap(x,y);
     // See page 288 equation (11.10) of HZ.
     vec F_x = F * x;
     vec Ft_y = trans(F) * y;
@@ -196,9 +198,8 @@ public :
       }
 
       // Find the two F matrices in the nullspace of A.
-      mat U;
+      mat U,V;
       colvec s;
-      mat V;
       if (svd(U,s,V,A))
       {
         mat F1 = reshape(V.col(A.n_cols - 1),3,3);
@@ -259,7 +260,7 @@ public :
                                       double threshold)
   {
     assert(model.size() > 0);
-    vector< vector<int> > inliers(model.size());
+    vector< vector<int> > vec_inliers(model.size());
     int bestIndex = 0;
     // For each model compute the number of inliers and the index of the inliers
     // Return the longest inliers vector.
@@ -270,16 +271,14 @@ public :
       {
         vec x1 = candidates.submat(0,j,1,j);
         vec x2 = candidates.submat(2,j,3,j);
-        double dist = EpipolarDistanceError::Error(modelToTest,x1,x2);
+        double dist = SampsonError::Error(modelToTest,x1,x2);
         if ( abs(dist) < threshold)
-          inliers[i].push_back(j);
+          vec_inliers[i].push_back(j);
       }
-      if ( i > 0 && inliers[bestIndex].size() < inliers[i].size())
-      {
+      if ( i > 0 && vec_inliers[bestIndex].size() < vec_inliers[i].size())
         bestIndex = i;
-      }
     }
-    return inliers[bestIndex];
+    return vec_inliers[bestIndex];
   }
 
   /**
@@ -292,9 +291,8 @@ public :
     */
   static T extractor(const T & data, const vector<int> & sampled)
   {
-    mat test;
-    test.zeros(data.n_rows,sampled.size());
-    for(size_t i=0; i < sampled.size(); ++i)
+    mat test = zeros(data.n_rows,sampled.size());
+    for(size_t i = 0; i < sampled.size(); ++i)
     {
       test.col(i) = data.col( sampled[i] );
     }
