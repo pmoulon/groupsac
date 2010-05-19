@@ -1,18 +1,18 @@
-%testDistCluters
+%testMeanShift
+%
+% Try to find nCLust onto a dataset of points.
+%
 
 clear
-profile on
+profile on % If you use octave comment this line
 
 nPtsPerClust = 250;
 nClust  = 3;
 totalNumPts = nPtsPerClust*nClust;
-m(:,1) = [1 1]';
-m(:,2) = [-1 -1]';
-m(:,3) = [1 -1]';
+m = [1 -1 1; 1 -1 -1];
 var = .6;
 bandwidth = .75;
 clustMed = [];
-%clustCent;
 
 
 x = var*randn(2,nPtsPerClust*nClust);
@@ -29,7 +29,7 @@ numClust = length(clustMembsCell);
 
 
 figure(10),clf,hold on
-cVec = 'bgrcmykbgrcmykbgrcmykbgrcmyk';%, cVec = [cVec cVec];
+cVec = 'bgrcmykbgrcmykbgrcmykbgrcmyk'; % color to display computed cluster
 for k = 1:min(numClust,length(cVec))
     myMembers = clustMembsCell{k};
     myClustCen = clustCent(:,k);
