@@ -11,6 +11,8 @@ MESSAGE(STATUS "Configuring Groupsac ${GROUPSAC_MAJOR}.${GROUPSAC_MINOR}.${GROUP
 
 PROJECT(groupsac C CXX)
 
+ENABLE_TESTING()
+
 INCLUDE_DIRECTORIES(
   .
   estimators
