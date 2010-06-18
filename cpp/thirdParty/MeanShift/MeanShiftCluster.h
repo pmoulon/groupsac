@@ -49,7 +49,7 @@ bool MeanShiftCluster(const mat & dataPts, double bandWidth, mat & clustCent, ve
 
   while (numInitPts!=0)
   {    
-    int tempInd     = ceil( (numInitPts-1)%int(rand()));// pick a random seed point
+    int tempInd     = ceil( (double)((numInitPts-1)%int(rand())));// pick a random seed point
     int stInd = initPtInds[tempInd];          // use this point as start of mean
     mat myMean = dataPts.col(stInd);          // intialize mean to this points location
     vector<int> myMembers;                    // points that will get added to this cluster
@@ -151,6 +151,6 @@ bool MeanShiftCluster(const mat & dataPts, double bandWidth, mat & clustCent, ve
   dists = sum((repmat(x2,1,x1_num) - x1s).^2);    // %dist squared from mean to all points still active
   end
   end*/
-
+  return false; //temporary
 }
 
