@@ -46,33 +46,60 @@ struct eop_aux_rand< std::complex<T> >
 template<typename eT>
 struct eop_aux_randn
   {
-  // TODO: implement a more efficient method for randn()
+  // // rudimentary method, based on the central limit theorem
+  // // http://en.wikipedia.org/wiki/Central_limit_theorem
+  // inline
+  // operator eT () const
+  //   {
+  //   const u32 N  = 12;  // N must be >= 12 and an even number
+  //   const u32 N2 = N/2;
+  //   
+  //   eT acc = eT(0);
+  //   
+  //   for(u32 i=0; i<N2; ++i)
+  //     {
+  //     const eT tmp1 = eT(std::rand()) / eT(RAND_MAX);
+  //     const eT tmp2 = eT(std::rand()) / eT(RAND_MAX);
+  //     acc += tmp1+tmp2;
+  //     }
+  //   
+  //   return acc - eT(N2);
+  //   }
+  
+  
+  // polar form of the Box-Muller transformation
+  // http://en.wikipedia.org/wiki/Box-Muller_transformation
+  // http://en.wikipedia.org/wiki/Marsaglia_polar_method
+  inline
+  operator eT () const
+    {
+    // make sure we are internally using at least floats
+    typedef typename promote_type<eT,float>::result eTp;
+    
+    eTp tmp1;
+    eTp tmp2;
+    eTp w;
+    
+    do
+      {
+      tmp1 = eTp(2) * eTp(std::rand()) / eTp(RAND_MAX) - eTp(1);
+      tmp2 = eTp(2) * eTp(std::rand()) / eTp(RAND_MAX) - eTp(1);
+      w = tmp1*tmp1 + tmp2*tmp2;
+      }
+    while ( w >= eTp(1) );
+    
+    return eT( tmp1 * std::sqrt( (eTp(-2) * std::log(w)) / w) );
+    }
+  
+  
+  // other methods:
+  // http://en.wikipedia.org/wiki/Ziggurat_algorithm
   //
-  // possible option:
   // Marsaglia and Tsang Ziggurat technique to transform from a uniform to a normal distribution.
   // G. Marsaglia, W.W. Tsang.
   // "Ziggurat method for generating random variables",
   // J. Statistical Software, vol 5, 2000.
   // http://www.jstatsoft.org/v05/i08/
-  
-  inline
-  operator eT () const
-    {
-    const u32 N  = 12;  // N must be >= 12 and an even number
-    const u32 N2 = N/2;
-    
-    eT acc = eT(0);
-    
-    for(u32 i=0; i<N2; ++i)
-      {
-      const eT tmp1 = eT(std::rand()) / eT(RAND_MAX);
-      const eT tmp2 = eT(std::rand()) / eT(RAND_MAX);
-      acc += tmp1+tmp2;
-      }
-    
-    return acc - eT(N2);
-    }
-  
   };
 
 
@@ -89,6 +116,8 @@ struct eop_aux_randn< std::complex<T> >
   };
 
 
+//! use of the SFINAE approach to work around compiler limitations
+//! http://en.wikipedia.org/wiki/SFINAE
 
 class eop_aux
   {
@@ -129,6 +158,27 @@ class eop_aux
   template<typename eT> arma_inline static eT              conj(const eT&              x) { return x;            }
   template<typename  T> arma_inline static std::complex<T> conj(const std::complex<T>& x) { return std::conj(x); }
   
+  template<typename eT> arma_inline static typename arma_integral_only<eT>::result sqrt  (const eT& x) { return std::sqrt (double(x)); }
+  template<typename eT> arma_inline static typename arma_integral_only<eT>::result log10 (const eT& x) { return std::log10(double(x)); }
+  template<typename eT> arma_inline static typename arma_integral_only<eT>::result log   (const eT& x) { return std::log  (double(x)); }
+  template<typename eT> arma_inline static typename arma_integral_only<eT>::result exp   (const eT& x) { return std::exp  (double(x)); }
+  template<typename eT> arma_inline static typename arma_integral_only<eT>::result cos   (const eT& x) { return std::cos  (double(x)); }
+  template<typename eT> arma_inline static typename arma_integral_only<eT>::result sin   (const eT& x) { return std::sin  (double(x)); }
+  template<typename eT> arma_inline static typename arma_integral_only<eT>::result tan   (const eT& x) { return std::tan  (double(x)); }
+  template<typename eT> arma_inline static typename arma_integral_only<eT>::result cosh  (const eT& x) { return std::cosh (double(x)); }
+  template<typename eT> arma_inline static typename arma_integral_only<eT>::result sinh  (const eT& x) { return std::sinh (double(x)); }
+  template<typename eT> arma_inline static typename arma_integral_only<eT>::result tanh  (const eT& x) { return std::tanh (double(x)); }
+  
+  template<typename eT> arma_inline static typename arma_float_or_cx_only<eT>::result sqrt  (const eT& x) { return std::sqrt (x); }
+  template<typename eT> arma_inline static typename arma_float_or_cx_only<eT>::result log10 (const eT& x) { return std::log10(x); }
+  template<typename eT> arma_inline static typename arma_float_or_cx_only<eT>::result log   (const eT& x) { return std::log  (x); }
+  template<typename eT> arma_inline static typename arma_float_or_cx_only<eT>::result exp   (const eT& x) { return std::exp  (x); }
+  template<typename eT> arma_inline static typename arma_float_or_cx_only<eT>::result cos   (const eT& x) { return std::cos  (x); }
+  template<typename eT> arma_inline static typename arma_float_or_cx_only<eT>::result sin   (const eT& x) { return std::sin  (x); }
+  template<typename eT> arma_inline static typename arma_float_or_cx_only<eT>::result tan   (const eT& x) { return std::tan  (x); }
+  template<typename eT> arma_inline static typename arma_float_or_cx_only<eT>::result cosh  (const eT& x) { return std::cosh (x); }
+  template<typename eT> arma_inline static typename arma_float_or_cx_only<eT>::result sinh  (const eT& x) { return std::sinh (x); }
+  template<typename eT> arma_inline static typename arma_float_or_cx_only<eT>::result tanh  (const eT& x) { return std::tanh (x); }
   
   template<typename T1, typename T2> arma_inline static
   T1    pow(const T1    base, const T2 exponent) { return std::pow(base, exponent); }

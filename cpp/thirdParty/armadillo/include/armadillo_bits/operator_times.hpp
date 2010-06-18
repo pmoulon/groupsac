@@ -48,6 +48,40 @@ operator*
 
 
 
+//! non-complex Base * complex scalar (experimental)
+template<typename T1>
+arma_inline
+const mtOp<typename std::complex<typename T1::pod_type>, T1, op_cx_scalar_times>
+operator*
+  (
+  const Base<typename T1::pod_type, T1>&     X,
+  const std::complex<typename T1::pod_type>& k
+  )
+  {
+  arma_extra_debug_sigprint();
+  
+  return mtOp<typename std::complex<typename T1::pod_type>, T1, op_cx_scalar_times>('j', X.get_ref(), k);
+  }
+
+
+
+//! complex scalar * non-complex Base (experimental)
+template<typename T1>
+arma_inline
+const mtOp<typename std::complex<typename T1::pod_type>, T1, op_cx_scalar_times>
+operator*
+  (
+  const std::complex<typename T1::pod_type>& k,
+  const Base<typename T1::pod_type, T1>&     X
+  )
+  {
+  arma_extra_debug_sigprint();
+  
+  return mtOp<typename std::complex<typename T1::pod_type>, T1, op_cx_scalar_times>('j', X.get_ref(), k);
+  }
+
+
+
 //! scalar * trans(T1)
 template<typename T1>
 arma_inline
@@ -157,8 +191,8 @@ operator*
 
 //! multiplication of Base objects with different element types
 template<typename T1, typename T2>
-arma_inline
-Mat<typename promote_type<typename T1::elem_type, typename T2::elem_type>::result>
+inline
+const mtGlue< typename promote_type<typename T1::elem_type, typename T2::elem_type>::result, T1, T2, glue_mixed_times >
 operator*
   (
   const Base< typename force_different_type<typename T1::elem_type, typename T2::elem_type>::T1_result, T1>& X,
@@ -174,17 +208,7 @@ operator*
   
   promote_type<eT1,eT2>::check();
   
-  const unwrap<T1> tmp1(X.get_ref());
-  const unwrap<T2> tmp2(Y.get_ref());
-  
-  const Mat<eT1>& A = tmp1.M;
-  const Mat<eT2>& B = tmp2.M;
-  
-  Mat<out_eT> out;
-  
-  glue_times::apply_mixed(out, A, B);
-  
-  return out;
+  return mtGlue<out_eT, T1, T2, glue_mixed_times>( X.get_ref(), Y.get_ref() );
   }
 
 

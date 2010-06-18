@@ -1,8 +1,9 @@
 Project: Armadillo
 URL: http://arma.sourceforge.net
 License: GPL3/LGPL3
-Upstream version: 0.9.4
+Upstream version: 0.9.10
 
 Local modifications:
 
   * Force to include BLAS and LAPACK library under windows
+  * Update to 0.9.10 to have join_rows and join_cols functionnality
