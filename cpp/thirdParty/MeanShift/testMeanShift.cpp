@@ -19,7 +19,9 @@ int main()
   mat clustMed;
 
   //*** build the point set
-  mat x = var*randn<mat>(2,totalNumPts);
+  mat testRand = randn<mat>(2,totalNumPts);;
+  //testRand.load("test.mat",raw_ascii);
+  mat x = var*testRand;//randn<mat>(2,totalNumPts);
   for (int i = 1; i <= nClust; ++i)
   {
     x.cols(1+(i-1)*nPtsPerClust-1,(i)*nPtsPerClust-1) = 
@@ -32,11 +34,12 @@ int main()
   vector<int> data2cluster;
   MeanShiftCluster(x, bandwidth, clustCent, data2cluster, cluster2dataCell);
 
-/*  numClust = length(clustMembsCell);
+  int numClust = clustCent.n_cols;
+  cout << endl << "Found " << numClust << " clusters" << endl;
 
   // Output matrix in a format readable for octave and matlab in order to check visually the output.
   
-  figure(10),clf,hold on
+  /*figure(10),clf,hold on
   cVec = 'bgrcmykbgrcmykbgrcmykbgrcmyk'; % color to display computed cluster
   for k = 1:min(numClust,length(cVec))
       myMembers = clustMembsCell{k};
