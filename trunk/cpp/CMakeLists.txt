@@ -19,8 +19,10 @@ INCLUDE_DIRECTORIES(
   ransac
   thirdParty
 )
-ADD_SUBDIRECTORY(thirdParty)
+
 ADD_SUBDIRECTORY(estimators)
+ADD_SUBDIRECTORY(grouping)
 ADD_SUBDIRECTORY(ransac)
 ADD_SUBDIRECTORY(tests)
+ADD_SUBDIRECTORY(thirdParty)
 
