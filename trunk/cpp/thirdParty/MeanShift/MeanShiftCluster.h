@@ -133,9 +133,19 @@ bool MeanShiftCluster(const mat & dataPts, double bandWidth, mat & clustCent, ve
     }
   }
 
+  //Store point that belongs to the cluster with the most votes
+  mat occurencePerClusters = max(clusterVotes,0);
+  int largestCluster = max_element( occurencePerClusters.begin(), occurencePerClusters.end()) - occurencePerClusters.begin();
+  umat index = (clusterVotes.col(largestCluster) > 0);
+  cout << index << endl;
+  for(int i=0; i < index.n_rows; ++i)
+    if ( index(i) ) data2cluster.push_back(i);
+  //data2Cluster do not contain the data explained on the top (doc of the top !)
+    
   //[val,data2cluster] = max(clusterVotes,[],1);                // a point belongs to the cluster with the most votes
 
-
+  // TODO implement the following :
+  //-----------------------------
   // %*** If they want the cluster2data cell find it for them
   /*if nargout > 2
   cluster2dataCell = cell(numClust,1);
@@ -144,13 +154,7 @@ bool MeanShiftCluster(const mat & dataPts, double bandWidth, mat & clustCent, ve
   cluster2dataCell{cN} = myMembers;
   end
   end*/
-
-  // %% the squared distance function
-  /*    function [dists] = default_sqdist(x1s, x2)
-  x1_num = size(x1s,2);
-  dists = sum((repmat(x2,1,x1_num) - x1s).^2);    // %dist squared from mean to all points still active
-  end
-  end*/
+  //-----------------------------
   return false; //temporary
 }
 
