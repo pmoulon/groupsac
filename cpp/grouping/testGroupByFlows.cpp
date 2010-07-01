@@ -38,6 +38,7 @@ TEST ( Group_by_Flows, demo )
 //------------------------------
 TEST ( Group_by_Flows, TestOneCluster )
 {
+  cout<< endl<< "[Group_by_Flows::TestOneCluster]"<< endl<< endl;
   mat xs1 = "1 2 3 4 5; 0 0 0 0 0";
   mat xs2 = "2 3 4 5 6; 0 0 0 0 0";
   double bandwidth = 10.0;
@@ -49,8 +50,8 @@ TEST ( Group_by_Flows, TestOneCluster )
   // Check return values :
   CHECK( 1 == seg_num);
 
-  mat expected_vis_map = "1; 1; 1; 1; 1";
-  //TODO => CHECK( accu(vis_map == expected_vis_map) == expected_vis_map.n_elem );
+  mat expected_vis_map = "1 1 1 1 1";
+  CHECK( accu(vis_map == expected_vis_map) == expected_vis_map.n_elem );
   
   mat expected_clustCent = "3; 0; -1; 0"; // x, y, delta_x, delta_y
   CHECK( accu(clustCent == expected_clustCent) == expected_clustCent.n_elem );
@@ -65,6 +66,7 @@ TEST ( Group_by_Flows, TestOneCluster )
 //------------------------------
 TEST ( Group_by_Flows, TestTwoCluster )
 {
+  cout<< endl<< "[Group_by_Flows::TestTwoCluster]"<< endl<< endl;
   mat xs1 = " 1  2  3  4  5  6  7  8  9 10;0 0 0 0 0 0 0 0 0 0";
   mat xs2 = "11 12 13 14 15 -4 -3 -2 -1  0;0 0 0 0 0 0 0 0 0 0";
   double bandwidth = 10.0;
@@ -77,13 +79,16 @@ TEST ( Group_by_Flows, TestTwoCluster )
   CHECK( 2 == seg_num);
 
   mat expected_vis_map = "1 1 1 1 1 0 0 0 0 0; 0 0 0 0 0 1 1 1 1 1";
-  vis_map = trans(vis_map);
-  //TODO => CHECK( accu(vis_map == expected_vis_map) == expected_vis_map.n_elem );
+  // Due to random things the cluster could be inverted (check the two possibility) :
+  CHECK( (accu(vis_map == expected_vis_map) == expected_vis_map.n_elem)
+       ||
+        (accu(flipud(vis_map) == expected_vis_map) == expected_vis_map.n_elem));
   
-//  mat expected_clustCent = "3 0 -10 0; 8 0 10 0"; // x, y, delta_x, delta_y
-  mat expected_clustCent = "8 0 10 0; 3 0 -10 0"; // x, y, delta_x, delta_y
+  mat expected_clustCent = "3 0 -10 0; 8 0 10 0"; // x, y, delta_x, delta_y
   expected_clustCent = trans(expected_clustCent);
-  CHECK( accu(clustCent == expected_clustCent) == expected_clustCent.n_elem );
+  CHECK( (accu(clustCent == expected_clustCent) == expected_clustCent.n_elem)
+          ||
+          (accu(fliplr(clustCent) == expected_clustCent) == expected_clustCent.n_elem));
 }
 
 //------------------------------
@@ -95,6 +100,7 @@ TEST ( Group_by_Flows, TestTwoCluster )
 //------------------------------
 TEST ( Group_by_Flows, TestTwoCluster2 )
 {
+  cout<< endl<< "[Group_by_Flows::TestTwoCluster2]"<< endl<< endl;
   mat xs1 = "1 2 3 4 5   6   7    8    9  10; 0 0 0 0 0 0 0 0 0 0";
   mat xs2 = "2 3 4 5 6 106 107  108  109 110; 0 0 0 0 0 0 0 0 0 0";
   double bandwidth = 10.0;
@@ -107,12 +113,16 @@ TEST ( Group_by_Flows, TestTwoCluster2 )
   CHECK( 2 == seg_num);
 
   mat expected_vis_map = "1 1 1 1 1 0 0 0 0 0; 0 0 0 0 0 1 1 1 1 1";
-  vis_map = trans(vis_map);
-  //TODO => CHECK( accu(vis_map == expected_vis_map) == expected_vis_map.n_elem );
-  
+  //vis_map = trans(vis_map);
+  // Due to random things the cluster could be inverted (check the two possibility) :
+  CHECK( (accu(vis_map == expected_vis_map) == expected_vis_map.n_elem)
+       ||
+        (accu(flipud(vis_map) == expected_vis_map) == expected_vis_map.n_elem));
+         
   mat expected_clustCent = "8 0 -100 0; 3 0 -1 0"; // x, y, delta_x, delta_y
   expected_clustCent = trans(expected_clustCent);
   CHECK( accu(clustCent == expected_clustCent) == expected_clustCent.n_elem );
+  
 }
 
 /* ************************************************************************* */

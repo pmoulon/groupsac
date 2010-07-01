@@ -1,6 +1,8 @@
 
 
 #include <iostream>
+#include <map>
+#include <vector>
 
 #include "MeanShift/MeanShiftCluster.h"
 #include "armadillo/include/armadillo"
@@ -29,35 +31,28 @@ bool groupByFlows(const mat & xs1, const mat & xs2, double bandwidth, int & seg_
   xs = join_cols(xs, x_dists);
   xs = join_cols(xs, y_dists);
 
-  mat cluster2dataCell;
+  map< int,vector<int> > cluster2dataCell;
   vector<int> data2cluster;
   MeanShiftCluster(xs, bandwidth, clustCent, data2cluster, cluster2dataCell);
-  
-  // TODO CUSTOMIZE THE SQ_DIST
-  
+    
   if (bVerbose)
   {
       cout << "clustering takes X seconds" << endl;
   }
+  
   seg_num = clustCent.n_cols;
-
-  // TODO implement the following :
-  //-----------------------------
-/*  //%% reorder the groups according to the number of the points they contain
-  group_sizes = zeros(seg_num ,1);
-  for (int gi=1; <i<length(group_sizes); ++gi)
+  
+  vis_map = zeros(cluster2dataCell.size(), x_dists.n_cols);
+  // Build vis_map :
+  for (int j=0; j < cluster2dataCell.size(); ++j)
   {
-      group_sizes(gi) = length(clustMembsCell{gi});
+    for (int i = 0; i < cluster2dataCell[j].size(); ++i)
+    {
+      vis_map(j,cluster2dataCell[j][i]) = 1;
+    }
   }
-  [sorted idx] = sort(group_sizes, 'descend');
 
-  //%% generate vis_map using the reordered 
-  datum_num = size(xs1, 2);
-  vis_map = zeros(datum_num, seg_num);
-  for (int gi = 1; gi < seg_num ; ++gi)
-  {
-      vis_map(clustMembsCell{gi},idx==gi) = 1;
-  }*/
+  // TODO CUSTOMIZE THE SQ_DIST
 
 /*      function [dists] = sqdist(x1s, x2)
           x1_num = size(x1s,2);

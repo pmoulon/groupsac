@@ -5,6 +5,7 @@
 
 #include "armadillo/include/armadillo"
 #include "MeanShiftCluster.h"
+#include <iterator>
 
 int main()
 {
@@ -19,7 +20,7 @@ int main()
   mat clustMed;
 
   //*** build the point set
-  mat testRand = randn<mat>(2,totalNumPts);;
+  mat testRand = randn<mat>(2,totalNumPts);
   //testRand.load("test.mat",raw_ascii);
   mat x = var*testRand;//randn<mat>(2,totalNumPts);
   for (int i = 1; i <= nClust; ++i)
@@ -30,9 +31,15 @@ int main()
   }
   
   //cout << endl << " x " << endl << x << endl;
-  mat clustCent, cluster2dataCell;
+  mat clustCent;
+  map< int,vector<int> > cluster2dataCell;
   vector<int> data2cluster;
   MeanShiftCluster(x, bandwidth, clustCent, data2cluster, cluster2dataCell);
+  
+  //cout << endl;   cout << endl;
+  //copy(  data2cluster.begin(),   data2cluster.end(), ostream_iterator<int>(cout, " "));
+  //cout << endl;   cout << endl;
+
 
   int numClust = clustCent.n_cols;
   cout << endl << "Found " << numClust << " clusters" << endl;
