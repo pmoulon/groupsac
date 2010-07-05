@@ -35,7 +35,7 @@ fun_handle = @check_termination;
             best_inliers = inliers;
             cfg = GR.grp_cfgs{GR.cur_grps}(GR.cur_cfg,:);
             cfg_size = sum(sum(vis_map(:,cfg), 2) > 0);
-            rounds_needed = ransac_rounds_needed(inf, min_sample_num, l1mp, cfg_size, length(inliers));
+            rounds_needed = ransacRoundsNeeded(inf, min_sample_num, l1mp, cfg_size, length(inliers));
             %GR.grp_cfgs{GR.cur_grps}(GR.cur_cfg,:)
 			fprintf('cfg %s, round %d, %d inliers out of %d, non_randomness %d, rounds needed %d, allowed:%d\n', ...
                           mat2str(cfg), GR.cfg_rounds, length(inliers), cfg_size, min_inlier, rounds_needed, rounds_allowed);
