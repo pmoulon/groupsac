@@ -72,7 +72,7 @@ end
         persistent rounds_needed;
         if length(inliers) > length(best_inliers)
             best_inliers = inliers;
-            rounds_needed = ransac_rounds_needed(max_rounds, min_sample_num, l1mp, datum_num, length(inliers));
+            rounds_needed = ransacRoundsNeeded(max_rounds, min_sample_num, l1mp, datum_num, length(inliers));
             if verbose > 0
                 fprintf(1,'global round=%d   \tbest=%d \trounds_needed=%d\n', round, length(best_inliers), rounds_needed);
             end

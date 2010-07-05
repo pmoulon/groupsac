@@ -13,7 +13,7 @@ fun_handle = @check_termination;
         % first update the minimal inlier we need for non-randomness if we start a new group configration
         if PR.n_rounds == 1
             min_inlier = non_randomness(min_sample_num, PR.n);
-            rounds_needed = ransac_rounds_needed(inf, min_sample_num, l1mp, PR.n, length(best_inliers));
+            rounds_needed = ransacRoundsNeeded(inf, min_sample_num, l1mp, PR.n, length(best_inliers));
 			fprintf(1, 'n: %d round: %d, %d inliers, non_randomness:%d, rounds needed:%d, allowed:%d\n', ...
                     PR.n, PR.n_rounds, length(best_inliers), min_inlier, rounds_needed, PR.max_round);
         end
@@ -21,7 +21,7 @@ fun_handle = @check_termination;
         
         if length(inliers) > length(best_inliers)
             best_inliers = inliers;
-            rounds_needed = ransac_rounds_needed(inf, min_sample_num, l1mp, PR.n, length(inliers));
+            rounds_needed = ransacRoundsNeeded(inf, min_sample_num, l1mp, PR.n, length(inliers));
             fprintf(1, 'n: %d round: %d, %d inliers, non_randomness:%d, rounds needed:%d, allowed:%d\n', ...
                     PR.n, PR.n_rounds, length(best_inliers), min_inlier, rounds_needed, PR.max_round);
         end

@@ -1,5 +1,5 @@
 % return the minimal rounds needed for a given data set size and a given inlier number
-function [needed] = ransac_rounds_needed(max_rounds, min_sample_num, l1mp, datum_num, inlier_num)
+function [needed] = ransacRoundsNeeded(max_rounds, min_sample_num, l1mp, datum_num, inlier_num)
 
 w = inlier_num / datum_num;  % inlier point probability
 eps_log = log(1.0 - w ^ min_sample_num); % outlier sample probability
