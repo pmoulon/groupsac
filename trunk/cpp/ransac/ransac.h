@@ -20,7 +20,7 @@ int ransac_rounds_needed
    )
 {
   // inlier point probability
-  double w = inlier_num / datum_num;
+  double w = (double) inlier_num / (double) datum_num;
   // outlier sample probability
   double eps_log = log(1.0 - pow(w,min_sample_num));
   if (inlier_num == 0 || eps_log == 0 || inlier_num == datum_num)

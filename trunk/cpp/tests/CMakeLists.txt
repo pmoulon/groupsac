@@ -33,3 +33,8 @@ add_custom_target(testRobustRansacFundamental7ptSolver.run testRobustRansacFunda
 TARGET_LINK_LIBRARIES(testRobustRansacFundamental7ptSolver "CppUnitLite" ${LAPACK_BLAS_LIB})
 add_test(testRobustRansacFundamental7ptSolver testRobustRansacFundamental7ptSolver)
 
+add_executable(testRansacRoundsNeeded testRansacRoundsNeeded.cpp)
+add_custom_target(testRansacRoundsNeeded.run testRansacRoundsNeeded)
+TARGET_LINK_LIBRARIES(testRansacRoundsNeeded "CppUnitLite")
+add_test(testRansacRoundsNeeded testRansacRoundsNeeded)
+
