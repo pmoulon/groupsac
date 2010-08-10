@@ -3,6 +3,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <time.h>
 
 #include "MeanShift/MeanShiftCluster.h"
 #include "armadillo/include/armadillo"
@@ -14,6 +15,13 @@ using namespace arma;
 namespace groupsac  {
 namespace grouping  {
 
+mat weightedL2distance(const mat & x1s, const mat & x2)
+{
+  mat weights = "1 1 10 10";
+  int x1_num = x1s.n_cols;
+  return sum( weights*pow( (repmat(x2,1,x1_num) - x1s),2 ) );    //weighted dist squared
+}
+
 /// use Optical Flow based segmentation to group the data points for GroupSAC
 bool groupByFlows(const mat & xs1, const mat & xs2, double bandwidth, int & seg_num, mat & vis_map, mat & clustCent, bool bVerbose = false)
 {
@@ -23,6 +31,7 @@ bool groupByFlows(const mat & xs1, const mat & xs2, double bandwidth, int & seg_
   //% vis_map -   the row is the point index, the column is the segment index
   //% clustCent - the cluster centers
 
+  clock_t start = clock();
 
   //%% generate the flow groups
   mat x_dists = xs1.row(0) - xs2.row(0);
@@ -33,11 +42,12 @@ bool groupByFlows(const mat & xs1, const mat & xs2, double bandwidth, int & seg_
 
   map< int,vector<int> > cluster2dataCell;
   vector<int> data2cluster;
-  MeanShiftCluster(xs, bandwidth, clustCent, data2cluster, cluster2dataCell);
-    
+  MeanShiftCluster(xs, bandwidth, weightedL2distance, clustCent, data2cluster, cluster2dataCell);
+  
+  clock_t end = clock();
   if (bVerbose)
   {
-      cout << "clustering takes X seconds" << endl;
+      cout << "clustering takes "<<  ((double)(end-start))/CLOCKS_PER_SEC << " seconds" << endl;
   }
   
   seg_num = clustCent.n_cols;
@@ -51,16 +61,6 @@ bool groupByFlows(const mat & xs1, const mat & xs2, double bandwidth, int & seg_
       vis_map(j,cluster2dataCell[j][i]) = 1;
     }
   }
-
-  // TODO CUSTOMIZE THE SQ_DIST
-
-/*      function [dists] = sqdist(x1s, x2)
-          x1_num = size(x1s,2);
-          weights = [1 1 10 10];
-          dists = weights * ((repmat(x2,1,x1_num) - x1s).^2);    %dist squared from mean to all points still active
-      end
-  end*/
-  //-----------------------------
   
   return true; //TODO make a better return
 }
