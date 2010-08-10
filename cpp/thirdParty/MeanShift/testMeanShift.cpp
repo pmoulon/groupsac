@@ -34,7 +34,7 @@ int main()
   mat clustCent;
   map< int,vector<int> > cluster2dataCell;
   vector<int> data2cluster;
-  MeanShiftCluster(x, bandwidth, clustCent, data2cluster, cluster2dataCell);
+  MeanShiftCluster(x, bandwidth, l2distance, clustCent, data2cluster, cluster2dataCell);
   
   //cout << endl;   cout << endl;
   //copy(  data2cluster.begin(),   data2cluster.end(), ostream_iterator<int>(cout, " "));

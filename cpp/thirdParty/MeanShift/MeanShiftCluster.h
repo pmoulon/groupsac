@@ -7,13 +7,14 @@ using namespace arma;
 using namespace std;
 
 /// L2 Distance between two matrices
-mat sqdist(const mat & x1s, const mat & x2)
+mat l2distance(const mat & x1s, const mat & x2)
 {
   int x1_num = x1s.n_cols;
   return sum( pow( (repmat(x2,1,x1_num) - x1s),2 ) );    //dist squared
 }
-    
-bool MeanShiftCluster(const mat & dataPts, double bandWidth, mat & clustCent, vector<int> & data2cluster, map< int,vector<int> > & cluster2dataCell)
+
+template <typename DistanceMetric>
+bool MeanShiftCluster(const mat & dataPts, double bandWidth, const DistanceMetric & fun_distance, mat & clustCent, vector<int> & data2cluster, map< int,vector<int> > & cluster2dataCell)
 {
   /*perform MeanShift Clustering of data using a flat kernel
   %
@@ -49,7 +50,7 @@ bool MeanShiftCluster(const mat & dataPts, double bandWidth, mat & clustCent, ve
 
 
   while (numInitPts!=0)
-  {    
+  {
     int tempInd     = ceil( (double)((numInitPts-1)%int(rand())));// pick a random seed point
     int stInd = initPtInds[tempInd];          // use this point as start of mean
     mat myMean = dataPts.col(stInd);          // intialize mean to this points location
@@ -59,7 +60,7 @@ bool MeanShiftCluster(const mat & dataPts, double bandWidth, mat & clustCent, ve
 
     while (1)     //loop until convergence
     {
-      mat sqDistToAll = sqdist(dataPts, myMean); // dist squared from mean to all points still active
+      mat sqDistToAll = fun_distance(dataPts, myMean); // dist squared from mean to all points still active
       mat toMean;
       //select point within bandwidth
       vector<int> inInds;
@@ -70,7 +71,7 @@ bool MeanShiftCluster(const mat & dataPts, double bandWidth, mat & clustCent, ve
           inInds.push_back(i);
           thisClusterVotes(i) += 1;// add a vote for all the in points belonging to this cluster
 
-          if(toMean.n_rows == 0) 
+          if(toMean.n_rows == 0)
             toMean = dataPts.col(i);
           else
             toMean  = join_rows(toMean,dataPts.col(i)); // to compute the newMean
@@ -85,14 +86,14 @@ bool MeanShiftCluster(const mat & dataPts, double bandWidth, mat & clustCent, ve
       myMean        = mean(toMean,1);       // compute the new mean
 
       //%**** if mean doesn't move much stop this cluster ***
-      double meanDist = as_scalar(sqdist(myMean, myOldMean));
+      double meanDist = as_scalar(fun_distance(myMean, myOldMean));
       if ( meanDist < stopThresh )
-      {       
+      {
         //check for merge posibilities
         int mergeWith = -1;
         for (int cN = 0; cN < numClust; ++cN)
         {
-          double sqdistToOther = as_scalar( sqdist(myMean, clustCent.col(cN)) );//distance from posible new clust max to old clust max
+          double sqdistToOther = as_scalar( fun_distance(myMean, clustCent.col(cN)) );//distance from posible new clust max to old clust max
           if (sqdistToOther < bandSq / 4.0)                   //if its within bandwidth/2 merge new and old
           {
             mergeWith = cN;
@@ -110,7 +111,7 @@ bool MeanShiftCluster(const mat & dataPts, double bandWidth, mat & clustCent, ve
           numClust = numClust+1;                   //increment clusters
 
           // record the mean
-          if(clustCent.n_rows == 0) 
+          if(clustCent.n_rows == 0)
             clustCent = myMean;
           else
             clustCent  = join_rows(clustCent, myMean); // to compute the newMean
@@ -138,7 +139,7 @@ bool MeanShiftCluster(const mat & dataPts, double bandWidth, mat & clustCent, ve
     }
 
   }
-  
+
   // TODO(pmoulon) check if  numClust == nbSortedIndex ???
 
   mat occurencePerClusters = max(clusterVotes,0);
@@ -157,7 +158,7 @@ bool MeanShiftCluster(const mat & dataPts, double bandWidth, mat & clustCent, ve
       }
     }
   }
- 
+
   if (bVerbose)
   {
     // Display :
@@ -170,7 +171,7 @@ bool MeanShiftCluster(const mat & dataPts, double bandWidth, mat & clustCent, ve
     cout << endl << "Data2Cluster" << endl;
     copy(data2cluster.begin(), data2cluster.end(), ostream_iterator<int>(cout, " "));
   }
-  
+
   //-----------------------------
   return false; //temporary
 }
