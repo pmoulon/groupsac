@@ -8,12 +8,6 @@ using namespace std;
 #include "grouping/groupByFlows.h"
 using namespace groupsac::grouping;
 
-//using namespace groupsac;
-// |
-// | :: estimators
-// | :: ransac
-// | :: grouping /!\ TODO
-
 #include "armadillo/include/armadillo"
 using namespace arma;
 // |
