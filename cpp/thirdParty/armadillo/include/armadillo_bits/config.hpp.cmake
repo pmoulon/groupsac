@@ -15,6 +15,23 @@
 
 
 
+#if !defined(ARMA_USE_LAPACK)
+#cmakedefine ARMA_USE_LAPACK
+#endif
+
+#if !defined(ARMA_USE_BLAS)
+#cmakedefine ARMA_USE_BLAS
+#endif
+
+#cmakedefine ARMA_USE_ATLAS
+#define ARMA_ATLAS_INCLUDE_DIR ${ARMA_ATLAS_INCLUDE_DIR}/
+//// If you're using ATLAS and the compiler can't find cblas.h and/or clapack.h
+//// uncomment the above define and specify the appropriate include directory.
+//// Make sure the directory has a trailing /
+
+#cmakedefine ARMA_USE_BOOST
+#cmakedefine ARMA_USE_BOOST_DATE
+
 #cmakedefine ARMA_HAVE_STD_ISFINITE
 #cmakedefine ARMA_HAVE_STD_ISINF
 #cmakedefine ARMA_HAVE_STD_ISNAN
@@ -23,17 +40,5 @@
 #cmakedefine ARMA_HAVE_LOG1P
 #cmakedefine ARMA_HAVE_GETTIMEOFDAY
 
-#cmakedefine ARMA_USE_ATLAS
-#cmakedefine ARMA_USE_LAPACK
-#cmakedefine ARMA_USE_BLAS
-#cmakedefine ARMA_USE_BOOST
-#cmakedefine ARMA_USE_BOOST_DATE
-
 #cmakedefine ARMA_EXTRA_DEBUG
 #cmakedefine ARMA_NO_DEBUG
-
-#if defined(ARMA_USE_ATLAS)
-  #if !defined(ARMA_ATLAS_INCLUDE_DIR)
-    #define ARMA_ATLAS_INCLUDE_DIR  ${ARMA_ATLAS_INCLUDE_DIR}
-  #endif
-#endif

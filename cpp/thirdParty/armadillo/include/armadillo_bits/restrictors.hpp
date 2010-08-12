@@ -74,6 +74,19 @@ template<> struct arma_signed_integral_only<long>   { typedef long   result; };
 
 
 
+template<typename T> struct arma_signed_only { };
+
+template<> struct arma_signed_only<char>   { typedef char   result; };
+template<> struct arma_signed_only<short>  { typedef short  result; };
+template<> struct arma_signed_only<int>    { typedef int    result; };
+template<> struct arma_signed_only<long>   { typedef long   result; };
+template<> struct arma_signed_only<float>  { typedef float  result; };
+template<> struct arma_signed_only<double> { typedef double result; };
+
+template<typename T> struct arma_signed_only< std::complex<T> > { typedef std::complex<T> result; };
+
+
+
 template<typename T> struct arma_float_only { };
 
 template<> struct arma_float_only<float>  { typedef float  result; };
@@ -97,6 +110,15 @@ template<typename T> struct arma_cx_only< std::complex<T> > { typedef std::compl
 
 template<typename T> struct arma_not_cx                    { typedef T result; };
 template<typename T> struct arma_not_cx< std::complex<T> > { };
+
+
+
+template<typename T> struct arma_blas_type_only { };
+
+template<> struct arma_blas_type_only< float                > { typedef float                result; };
+template<> struct arma_blas_type_only< double               > { typedef double               result; };
+template<> struct arma_blas_type_only< std::complex<float>  > { typedef std::complex<float>  result; };
+template<> struct arma_blas_type_only< std::complex<double> > { typedef std::complex<double> result; };
 
 
 
@@ -139,6 +161,18 @@ template<> struct arma_glue_rel_only< glue_rel_gteq  > { typedef int result; };
 template<> struct arma_glue_rel_only< glue_rel_eq    > { typedef int result; };
 template<> struct arma_glue_rel_only< glue_rel_noteq > { typedef int result; };
 
+
+
+template<typename T> struct arma_Mat_Col_Row_only { };
+
+template<typename eT> struct arma_Mat_Col_Row_only< Mat<eT> > { typedef Mat<eT> result; };
+template<typename eT> struct arma_Mat_Col_Row_only< Col<eT> > { typedef Col<eT> result; };
+template<typename eT> struct arma_Mat_Col_Row_only< Row<eT> > { typedef Row<eT> result; };
+
+
+
+template<typename  T> struct arma_Cube_only             { };
+template<typename eT> struct arma_Cube_only< Cube<eT> > { typedef Cube<eT> result; };
 
 
 //! @}

@@ -18,9 +18,6 @@
 #define ARMA_INCLUDES
 
 
-#include "armadillo_bits/config.hpp"
-#include "armadillo_bits/compiler_setup.hpp"
-
 #include <cstdlib>
 #include <cstring>
 #include <climits>
@@ -36,23 +33,13 @@
 #include <vector>
 
 
+#include "armadillo_bits/config.hpp"
+#include "armadillo_bits/compiler_setup.hpp"
+
+
 #if defined(ARMA_HAVE_GETTIMEOFDAY)
   #include <sys/time.h>
   #undef ARMA_USE_BOOST_DATE
-#endif
-
-
-#if defined(ARMA_USE_BOOST)
-  #include <boost/math/complex.hpp>
-  #include <boost/math/special_functions/acosh.hpp>
-  #include <boost/math/special_functions/asinh.hpp>
-  #include <boost/math/special_functions/atanh.hpp>
-  #include <boost/current_function.hpp>
-
-  #if defined(ARMA_EXTRA_DEBUG)
-    #include <boost/format.hpp>
-    #define ARMA_USE_BOOST_FORMAT
-  #endif
 #endif
 
 
@@ -61,21 +48,55 @@
 #endif
 
 
+#if defined(ARMA_HAVE_STD_TR1)
+  #include <tr1/cmath>
+  #include <tr1/complex>
+#elif defined(ARMA_USE_BOOST)
+  #include <boost/math/complex.hpp>
+  #include <boost/math/special_functions/acosh.hpp>
+  #include <boost/math/special_functions/asinh.hpp>
+  #include <boost/math/special_functions/atanh.hpp>
+#endif
+
+
+#if defined(ARMA_USE_BOOST)
+  #if defined(ARMA_EXTRA_DEBUG)
+    #include <boost/format.hpp>
+    #include <boost/current_function.hpp>
+    #define ARMA_USE_BOOST_FORMAT
+  #endif
+#endif
+
+
 #if defined(ARMA_USE_ATLAS)
-  #define ARMA_TMP_STRING(x) x
-
-  #define ARMA_ATLAS_INCLUDE_1 <ARMA_TMP_STRING(ARMA_ATLAS_INCLUDE_DIR)/ARMA_TMP_STRING(cblas.h)>
-  #define ARMA_ATLAS_INCLUDE_2 <ARMA_TMP_STRING(ARMA_ATLAS_INCLUDE_DIR)/ARMA_TMP_STRING(clapack.h)>
   
-  extern "C"
-    {
-    #include ARMA_ATLAS_INCLUDE_1
-    #include ARMA_ATLAS_INCLUDE_2
-    }
+  #if !defined(ARMA_ATLAS_INCLUDE_DIR)
+    extern "C"
+      {
+      #include <cblas.h>
+      #include <clapack.h>
+      }
+  #else
+  
+    #define ARMA_STR1(x) x
+    #define ARMA_STR2(x) ARMA_STR1(x)
+    #define ARMA_STR3(x) <x>
 
-  #undef ARMA_TMP_STRING
-  #undef ARMA_ATLAS_INCLUDE_1
-  #undef ARMA_ATLAS_INCLUDE_2
+    #define ARMA_CBLAS   ARMA_STR2(ARMA_ATLAS_INCLUDE_DIR)ARMA_STR2(cblas.h)
+    #define ARMA_CLAPACK ARMA_STR2(ARMA_ATLAS_INCLUDE_DIR)ARMA_STR2(clapack.h)
+      
+    extern "C"
+      {
+      #include ARMA_STR3(ARMA_CBLAS)
+      #include ARMA_STR3(ARMA_CLAPACK)
+      }
+
+    #undef ARMA_STR1
+    #undef ARMA_STR2
+    #undef ARMA_STR3
+    #undef ARMA_CBLAS
+    #undef ARMA_CLAPACK
+  #endif  
 #endif
 
 
@@ -92,7 +113,6 @@ namespace arma
   #include "armadillo_bits/arma_static_assert.hpp"
   #include "armadillo_bits/typedef.hpp"
   #include "armadillo_bits/format_wrap.hpp"
-  #include "armadillo_bits/cmath_wrap.hpp"
   #include "armadillo_bits/constants.hpp"
   #include "armadillo_bits/arma_version.hpp"
   #include "armadillo_bits/arma_config.hpp"
@@ -116,6 +136,8 @@ namespace arma
   
   #include "armadillo_bits/Base.hpp"
   #include "armadillo_bits/BaseCube.hpp"
+  
+  #include "armadillo_bits/injector_proto.hpp"
   
   #include "armadillo_bits/Mat_proto.hpp"
   #include "armadillo_bits/Col_proto.hpp"
@@ -195,16 +217,18 @@ namespace arma
   #include "armadillo_bits/glue_join_proto.hpp"
   #include "armadillo_bits/glue_relational_proto.hpp"
   #include "armadillo_bits/glue_solve_proto.hpp"
-  
-  
-  // for tests & experiments
-  
+  #include "armadillo_bits/glue_conv_proto.hpp"
+  #include "armadillo_bits/glue_toeplitz_proto.hpp"
   
   //
   // debugging functions
   
   #include "armadillo_bits/debug.hpp"
   
+  //
+  //
+  
+  #include "armadillo_bits/cmath_wrap.hpp"
   
   //
   // classes that underlay metaprogramming 
@@ -293,7 +317,7 @@ namespace arma
   #include "armadillo_bits/fn_misc.hpp"
   #include "armadillo_bits/fn_norm.hpp"
   #include "armadillo_bits/fn_dot.hpp"
-  #include "armadillo_bits/fn_rand.hpp"
+  #include "armadillo_bits/fn_randu.hpp"
   #include "armadillo_bits/fn_randn.hpp"
   #include "armadillo_bits/fn_trig.hpp"
   #include "armadillo_bits/fn_mean.hpp"
@@ -323,6 +347,10 @@ namespace arma
   #include "armadillo_bits/fn_princomp_cov.hpp"
   #include "armadillo_bits/fn_cross.hpp"
   #include "armadillo_bits/fn_join.hpp"
+  #include "armadillo_bits/fn_conv.hpp"
+  #include "armadillo_bits/fn_trunc_exp.hpp"
+  #include "armadillo_bits/fn_trunc_log.hpp"
+  #include "armadillo_bits/fn_toeplitz.hpp"
   
   //
   // class meat
@@ -339,6 +367,8 @@ namespace arma
   
   #include "armadillo_bits/podarray_meat.hpp"
   #include "armadillo_bits/auxlib_meat.hpp"
+  
+  #include "armadillo_bits/injector_meat.hpp"
   
   #include "armadillo_bits/Mat_meat.hpp"
   #include "armadillo_bits/Col_meat.hpp"
@@ -395,6 +425,8 @@ namespace arma
   #include "armadillo_bits/glue_join_meat.hpp"
   #include "armadillo_bits/glue_relational_meat.hpp"
   #include "armadillo_bits/glue_solve_meat.hpp"
+  #include "armadillo_bits/glue_conv_meat.hpp"
+  #include "armadillo_bits/glue_toeplitz_meat.hpp"
   }
   
 #endif
