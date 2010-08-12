@@ -408,6 +408,16 @@ Col<eT>::operator*=(const diagview<eT>& X)
 
 
 template<typename eT>
+inline
+mat_injector< Col<eT> >
+Col<eT>::operator<<(const eT val)
+  {
+  return mat_injector< Col<eT> >(*this, val);
+  }
+
+
+
+template<typename eT>
 arma_inline
 eT&
 Col<eT>::row(const u32 row_num)
@@ -766,6 +776,20 @@ Col<eT>::set_size(const u32 in_n_rows, const u32 in_n_cols)
 
 
 
+template<typename eT>
+inline
+void
+Col<eT>::reshape(const u32 in_rows, const u32 in_cols, const u32 dim)
+  {
+  arma_extra_debug_sigprint();
+
+  Mat<eT>::reshape(in_rows, in_cols, dim);
+  
+  arma_debug_check( (in_cols > 1), "Col::set_size(): incompatible dimensions" );
+  }
+
+
+
 //! change the number of n_rows  (this function re-implements mat::copy_size() in order to check the number of columns)
 template<typename eT>
 template<typename eT2>
@@ -864,11 +888,11 @@ Col<eT>::ones(const u32 in_n_rows, const u32 in_n_cols)
 template<typename eT>
 inline
 void
-Col<eT>::load(const std::string name, const file_type type)
+Col<eT>::load(const std::string name, const file_type type, const bool print_status)
   {
   arma_extra_debug_sigprint();
   
-  Mat<eT>::load(name,type);
+  Mat<eT>::load(name, type, print_status);
   
   arma_debug_check( (Mat<eT>::n_cols > 1), "Col(): incompatible dimensions" );
   }
@@ -878,11 +902,39 @@ Col<eT>::load(const std::string name, const file_type type)
 template<typename eT>
 inline
 void
-Col<eT>::load(std::istream& is, const file_type type)
+Col<eT>::load(std::istream& is, const file_type type, const bool print_status)
   {
   arma_extra_debug_sigprint();
   
-  Mat<eT>::load(is, type);
+  Mat<eT>::load(is, type, print_status);
+  
+  arma_debug_check( (Mat<eT>::n_cols > 1), "Col(): incompatible dimensions" );
+  }
+
+
+
+template<typename eT>
+inline
+void
+Col<eT>::quiet_load(const std::string name, const file_type type)
+  {
+  arma_extra_debug_sigprint();
+  
+  Mat<eT>::quiet_load(name, type);
+  
+  arma_debug_check( (Mat<eT>::n_cols > 1), "Col(): incompatible dimensions" );
+  }
+
+
+
+template<typename eT>
+inline
+void
+Col<eT>::quiet_load(std::istream& is, const file_type type)
+  {
+  arma_extra_debug_sigprint();
+  
+  Mat<eT>::quiet_load(is, type);
   
   arma_debug_check( (Mat<eT>::n_cols > 1), "Col(): incompatible dimensions" );
   }

@@ -97,6 +97,11 @@ class Mat : public Base< eT, Mat<eT> >
   inline const Mat& operator%=(const diagview<eT>& X);
   inline const Mat& operator/=(const diagview<eT>& X);
   
+  
+  inline mat_injector<Mat> operator<<(const eT val);
+  inline mat_injector<Mat> operator<<(const injector_helper x);
+  
+  
   arma_inline       subview_row<eT> row(const u32 row_num);
   arma_inline const subview_row<eT> row(const u32 row_num) const;
   
@@ -198,20 +203,21 @@ class Mat : public Base< eT, Mat<eT> >
   
   inline void print(const std::string extra_text = "") const;
   inline void print(std::ostream& user_stream, const std::string extra_text = "") const;
-
+  
   inline void print_trans(const std::string extra_text = "") const;
   inline void print_trans(std::ostream& user_stream, const std::string extra_text = "") const;
-
+  
   inline void raw_print(const std::string extra_text = "") const;
   inline void raw_print(std::ostream& user_stream, const std::string extra_text = "") const;
-
+  
   inline void raw_print_trans(const std::string extra_text = "") const;
   inline void raw_print_trans(std::ostream& user_stream, const std::string extra_text = "") const;
-
+  
   template<typename eT2>
   inline void copy_size(const Mat<eT2>& m);
   
   inline void  set_size(const u32 in_rows, const u32 in_cols);
+  inline void   reshape(const u32 in_rows, const u32 in_cols, const u32 dim = 0);
   
   arma_hot inline void fill(const eT val);
   
@@ -223,11 +229,18 @@ class Mat : public Base< eT, Mat<eT> >
   
   inline void reset();
   
-  inline void save(const std::string   name, const file_type type = arma_binary) const;
-  inline void save(      std::ostream& os,   const file_type type = arma_binary) const;
   
-  inline void load(const std::string   name, const file_type type = auto_detect);
-  inline void load(      std::istream& is,   const file_type type = auto_detect);
+  inline bool save(const std::string   name, const file_type type = arma_binary, const bool print_status = true) const;
+  inline bool save(      std::ostream& os,   const file_type type = arma_binary, const bool print_status = true) const;
+  
+  inline bool load(const std::string   name, const file_type type = auto_detect, const bool print_status = true);
+  inline bool load(      std::istream& is,   const file_type type = auto_detect, const bool print_status = true);
+  
+  inline bool quiet_save(const std::string   name, const file_type type = arma_binary) const;
+  inline bool quiet_save(      std::ostream& os,   const file_type type = arma_binary) const;
+  
+  inline bool quiet_load(const std::string   name, const file_type type = auto_detect);
+  inline bool quiet_load(      std::istream& is,   const file_type type = auto_detect);
   
   
   // iterators

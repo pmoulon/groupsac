@@ -65,6 +65,8 @@ class Col : public Mat<eT>, public BaseVec< eT, Col<eT> >
   inline                     Col(const diagview<eT>& X);
   inline const Col&    operator=(const diagview<eT>& X);
   inline const Col&   operator*=(const diagview<eT>& X);
+
+  inline mat_injector<Col> operator<<(const eT val);
   
   arma_inline eT& row(const u32 row_num);
   arma_inline eT  row(const u32 row_num) const;
@@ -98,6 +100,7 @@ class Col : public Mat<eT>, public BaseVec< eT, Col<eT> >
   
   inline void  set_size(const u32 n_elem);
   inline void  set_size(const u32 n_rows, const u32 n_cols);
+  inline void   reshape(const u32 n_rows, const u32 n_cols, const u32 dim = 0);
   
   template<typename eT2>
   inline void copy_size(const Mat<eT2>& m);
@@ -110,8 +113,12 @@ class Col : public Mat<eT>, public BaseVec< eT, Col<eT> >
   inline void ones(const u32 n_elem);
   inline void ones(const u32 n_rows, const u32 n_cols);
   
-  inline void load(const std::string   name, const file_type type = auto_detect);
-  inline void load(      std::istream& is,   const file_type type = auto_detect);
+  
+  inline void load(const std::string   name, const file_type type = auto_detect, const bool print_status = true);
+  inline void load(      std::istream& is,   const file_type type = auto_detect, const bool print_status = true);
+  
+  inline void quiet_load(const std::string   name, const file_type type = auto_detect);
+  inline void quiet_load(      std::istream& is,   const file_type type = auto_detect);
   
   
   typedef       eT*       row_iterator;
