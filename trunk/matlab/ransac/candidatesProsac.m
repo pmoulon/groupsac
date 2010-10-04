@@ -1,5 +1,5 @@
 %% return the points from certain groups, for debugging purpose
-function [fun_handle] = candidates_prosac(min_sample_num, rounds_to_equal, ordering)
+function [fun_handle] = candidatesProsac(min_sample_num, rounds_to_equal, ordering)
 
 global PR;
 
