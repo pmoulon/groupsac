@@ -3,6 +3,7 @@
 namespace groupsac  {
 namespace ransac  {
 
+
 //http://www.uni-koeln.de/rrzk/software/mathematik/matlab_help/techdoc/ref/nchoosek.html
 //http://en.wikipedia.org/wiki/Binomial_coefficient
 //Naive implementations of the factorial formula, such as the following snippet in C:
@@ -23,7 +24,7 @@ unsigned long long nchoosek(unsigned n, unsigned k)
   for (i = 1; i <= k; i++)
        accum = accum * (n-k+i) / i;
 
-  return accum + 0.5; // avoid rounding error
+  return (unsigned long long) (accum + 0.5); // avoid rounding error
 }
 
 double randomness_i(double beta, int m, int n, int inlier_num)
@@ -55,6 +56,7 @@ int non_randomness(int m, int n)
   {
     inlier_num = inlier_num + 1;          // the minimum solution for i
   }
+  return inlier_num;
 }
 
 }; // namespace ransac
