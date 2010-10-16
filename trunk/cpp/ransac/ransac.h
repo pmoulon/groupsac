@@ -62,19 +62,78 @@ bool  default_fun_termination
 vector<int> default_fun_candidates(int nbCandidates, int round)
 {
     vector<int> indices;
-    for (unsigned int i=0; i<nbCandidates; ++i)
+    for (int i=0; i<nbCandidates; ++i)
         indices.push_back(i);
     return indices;
 }
+
+//-- Temporary function (Must be defined more generally).
+//---- (not yet done) Deterministic sampler
+//---- x Random sampler
+template <typename T>
+vector<int> rand_sampler(const T & candidates, int MININUM_SAMPLES)
+{
+  vector<int> array;
+  int i = 0;
+  std::set<int> sample_set;
+  while (i < MININUM_SAMPLES)
+  {
+    int random_value_in_range = rand() % candidates.size();
+    if (sample_set.insert(random_value_in_range).second)
+    {
+      array.push_back(random_value_in_range);
+      ++i;
+    }
+  }
+  return array;
+}
+
+class Ransac_Handler
+{
+public:
+  // the sampling function
+  // A random sampler by default
+  template <typename T>
+  T sampler(const T & candidates, int MININUM_SAMPLES) const
+  {
+    return rand_sampler< vector<int> > (candidates, MININUM_SAMPLES);
+  }
+
+  // the function to select candidates from all data points
+  vector<int> fun_candidates(int nbCandidates, int round) const
+  {
+    return default_fun_candidates(nbCandidates, round);
+  }
+  
+  // Termination function
+  bool  fun_termination
+  (
+    vector<int> & best_inliers,
+    const vector<int> & inliers,
+    int round,
+    int max_rounds,
+    double logConfidence,
+    int iSolverMinimalSamples,
+    int iPutativesNumber
+  ) const
+  {
+    return default_fun_termination(best_inliers,
+     inliers,
+     round,
+     max_rounds,
+     logConfidence,
+     iSolverMinimalSamples,
+     iPutativesNumber);
+  }
+
+};
 
 // ransac: the common routine for RANSAC
 template< typename Data,
           typename DataExtractor,
           typename Solver,
           typename Evaluator,
-          typename CandidatesSelector,
-          typename Sampler,
-          typename Termination >
+          typename Ransac_Handler_Obj>
 bool Ransac_RobustEstimator
   (
     const Data & data,      // the input data
@@ -82,10 +141,9 @@ bool Ransac_RobustEstimator
     int iPutativesNumber,   // the number of putatives
     const Solver & solver,  // compute the underlying model given a sample set
     const Evaluator & evaluator,  // the function to evaluate a given model
-    //func to select candidates from data pts
-    const CandidatesSelector & candidatesSelector,
-    const Sampler & sampler,  // the sampling function
-    const Termination & fun_termination,  // the termination function
+    //Ransac Object that contain function:
+    // CandidatesSelector, Sampler and TerminationFunction
+    Ransac_Handler_Obj ransacHandler,
     int imax_rounds,          // the maximum rounds for RANSAC routine
     // Output parameters :
     vector<int> & vec_inliers,  // Inlier to the final solution
@@ -112,9 +170,9 @@ bool Ransac_RobustEstimator
     }
 
     // get the candidates for sampling
-    vector<int> candidates = candidatesSelector(iPutativesNumber, round);
+    vector<int> candidates = ransacHandler.fun_candidates(iPutativesNumber, round);
     // get sample indices from candidates
-    vector<int> sampled = sampler(candidates, solver.get_MINIMUM_SAMPLES());
+    vector<int> sampled = ransacHandler.sampler(candidates, solver.get_MINIMUM_SAMPLES());
 
     // For GroupSAC, return inlier in the current group configuration
     vector<typename Solver::ModelType> vec_model;
@@ -125,7 +183,7 @@ bool Ransac_RobustEstimator
                                     ransac_threshold(1,sigma));
     veri_num += candidates.size();
 
-    if( fun_termination(best_inliers, inliers,
+    if( ransacHandler.fun_termination(best_inliers, inliers,
                           round, imax_rounds,
                           l1mp, solver.get_MINIMUM_SAMPLES(),
                           iPutativesNumber)
