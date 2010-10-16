@@ -21,28 +21,6 @@ using namespace arma;
 // | :: mat
 // | :: vec
 
-//-- Temporary function (Must be defined more generally).
-//---- (not yet done) Deterministic sampler
-//---- x Random sampler
-template <typename T>
-vector<int> sampler(const T & candidates, int MININUM_SAMPLES)
-{
-  vector<int> array;
-  int i = 0;
-  std::set<int> sample_set;
-  while (i < MININUM_SAMPLES)
-  {
-    int random_value_in_range = rand() % candidates.size();
-    if (sample_set.insert(random_value_in_range).second)
-    {
-      array.push_back(random_value_in_range);
-      ++i;
-    }
-  }
-  return array;
-}
-
-//-- END -- Must now be defined
 //-------
 
 //------------------------------
@@ -73,6 +51,7 @@ TEST ( Ransac_LineFitting, RansacForLineEstimation )
   vector<int> inliers;
   vector<vec> models;
 
+  ransac::Ransac_Handler ransac_fun_Handler;
   CHECK(
   ransac::Ransac_RobustEstimator
   (
@@ -81,9 +60,9 @@ TEST ( Ransac_LineFitting, RansacForLineEstimation )
     dataPoints.n_rows,  // the number of putatives data
     *(ptrSolver.get()),  // compute the underlying model given a sample set
     estimators::lineFittingSolver<mat,vec>::defaultEvaluator,  // the function to evaluate a given model
-    ransac::default_fun_candidates,  // the function to select candidates from all data points
-    sampler< vector<int> >, // the sampling function
-    ransac::default_fun_termination, // the termination function
+    //Ransac Object that contain function:
+    // CandidatesSelector, Sampler and TerminationFunction
+    ransac_fun_Handler, // the basic ransac object
     1000,  // the maximum rounds for RANSAC routine
     inliers, // inliers to the final solution
     models, // models array that fit input data

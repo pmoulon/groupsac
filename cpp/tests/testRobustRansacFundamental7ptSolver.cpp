@@ -1,5 +1,5 @@
 /*
- * testR.cppobustFundamental7ptSolver.cpp
+ * robustFundamental7ptSolver.cpp
  *
  *   Created on: Apr 10, 2010
  *       Author: pmoulon
@@ -31,30 +31,6 @@ using namespace arma;
 // | :: auto_ptr<T>
 using namespace std;
 
-
-//-- Temporary function (Must be defined more generally).
-//---- (not yet done) Deterministic sampler
-//---- x Random sampler
-template <typename T>
-vector<int> sampler(const T & candidates, int MININUM_SAMPLES)
-{
-  vector<int> array;
-  int i = 0;
-  std::set<int> sample_set;
-  while (i < MININUM_SAMPLES)
-  {
-    int random_value_in_range = rand() % candidates.size();
-    if (sample_set.insert(random_value_in_range).second)
-    {
-      array.push_back(random_value_in_range);
-      ++i;
-    }
-  }
-  return array;
-}
-
-
-//-- END -- Must now be defined
 //-------
 
 //------------------------------
@@ -96,6 +72,7 @@ TEST ( Fundamental7ptFittingRobustSolver, Fundamental7pt )
   vector<int> inliers;
   vector<mat> models;
 
+  ransac::Ransac_Handler ransac_fun_Handler;
   CHECK(
   ransac::Ransac_RobustEstimator
   (
@@ -104,9 +81,9 @@ TEST ( Fundamental7ptFittingRobustSolver, Fundamental7pt )
     dataPoints.n_cols,  // the number of putatives data ( ideally dataPoints.cols() )
     *(ptrSolver.get()),  // compute the underlying model given a sample set
     estimators::Fundamental7ptSolver<mat,mat>::defaultEvaluator,  // the function to evaluate a given model
-    ransac::default_fun_candidates,  // the function to select candidates from all data points
-    sampler< vector<int> >, // the sampling function
-    ransac::default_fun_termination, // the termination function
+    //Ransac Object that contain function:
+    // CandidatesSelector, Sampler and TerminationFunction
+    ransac_fun_Handler,
     10,  // the maximum rounds for RANSAC routine
     inliers, // inliers to the final solution
     models, // models array that fit input data
@@ -170,6 +147,7 @@ TEST ( Fundamental7ptFittingRobustSolver, Fundamental7pt_VGG )
   vector<int> inliers;
   vector<mat> models;
 
+  ransac::Ransac_Handler ransac_fun_Handler;
   CHECK(
   ransac::Ransac_RobustEstimator
   (
@@ -178,9 +156,9 @@ TEST ( Fundamental7ptFittingRobustSolver, Fundamental7pt_VGG )
     dataPoints.n_cols,  // the number of putatives data
     *(ptrSolver.get()),  // compute the underlying model given a sample set
     estimators::Fundamental7ptSolver<mat,mat>::defaultEvaluator,  // the function to evaluate a given model
-    ransac::default_fun_candidates,  // the function to select candidates from all data points
-    sampler< vector<int> >, // the sampling function
-    ransac::default_fun_termination, // the termination function
+    //Ransac Object that contain function:
+    // CandidatesSelector, Sampler and TerminationFunction
+    ransac_fun_Handler,
     1000,     // the maximum rounds for RANSAC routine
     inliers,  // inliers to the final solution
     models,   // models array that fit input data

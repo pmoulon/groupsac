@@ -12,6 +12,7 @@ using namespace std;
 using namespace groupsac;
 // |
 // | :: ransac
+// | :: prosac
 
 //------------------------------
 // Assert that test works
@@ -40,8 +41,8 @@ TEST ( Ransac_Candidates_Prosac, testSimple )
      vec_ordering.push_back(i);
   }
 
-  ransac::prosac::PROSAC_handler prosac_handler(min_sample_num, rounds_to_equal, vec_ordering);
-  vector<int> vec_candidates = prosac_handler.fun_candidates(min_sample_num, 0);
+  ransac::prosac::PROSAC_handler prosac_fun_handler(min_sample_num, rounds_to_equal, vec_ordering);
+  vector<int> vec_candidates = prosac_fun_handler.fun_candidates(min_sample_num, 0);
 
   std::vector<int> vec_expected;
   for(int i=0; i < 7; ++i)
