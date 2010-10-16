@@ -106,7 +106,7 @@ public:
 			sampled = draw_samples(candidates.size()-1, MININUM_SAMPLES-1);
 			
 			// the n-th point is mandatory
-			assert(m_vec_ordering[PR.n] == candidates[candidates.size()-1]);
+			assert(m_vec_ordering[PR.n-1] == candidates[candidates.size()-1]);
       sampled .push_back(candidates.size()-1); // add last point
     }
 		else
