@@ -38,8 +38,16 @@ add_custom_target(testRansacRoundsNeeded.run testRansacRoundsNeeded)
 TARGET_LINK_LIBRARIES(testRansacRoundsNeeded "CppUnitLite")
 add_test(testRansacRoundsNeeded testRansacRoundsNeeded)
 
+# --------------------
+# Prosac related test
+# --------------------
 add_executable(testCandidatesProsac testCandidatesProsac.cpp)
 add_custom_target(testCandidatesProsac.run testCandidatesProsac)
 TARGET_LINK_LIBRARIES(testCandidatesProsac "CppUnitLite")
 add_test(testCandidatesProsac testCandidatesProsac)
+
+add_executable(testProsacFundmat testProsacFundmat.cpp)
+add_custom_target(testProsacFundmat.run testProsacFundmat)
+TARGET_LINK_LIBRARIES(testProsacFundmat "CppUnitLite" ${LAPACK_BLAS_LIB})
+add_test(testProsacFundmat testProsacFundmat)
 
