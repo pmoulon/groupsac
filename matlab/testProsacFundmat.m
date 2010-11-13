@@ -9,6 +9,7 @@ global PR;
 xs1 = [723 887; 1091 699; 1691 811; 447 635; 971 91; 1903 447; 1483 1555]';
 xs2 = [1251 1243; 1603 923; 2067 1031; 787 484; 1355 363; 2163  743; 1875 1715]';
 scores = [1 1 1 1 1 1 1];
+ordering = 1 : 7;
 is_inlier = 1 : 7;
 
 %% control parameters
@@ -22,8 +23,8 @@ confidence = 0.99;
 rounds_to_equal = 200000;
 fun_compute = fundmat7ptSolver(xs1,xs2);
 fun_evaluate = fundmat7ptEvaluator(xs1,xs2,sigma);
-fun_candidates = candidates_prosac(min_sample_num, rounds_to_equal, ordering);
-fun_sample = prosac_sample(ordering);
+fun_candidates = candidatesProsac(min_sample_num, rounds_to_equal, ordering);
+fun_sample = prosacSample(ordering);
 if early
 	fun_termination = early_termination_prosac(S.is_inlier, 0.8, size(xs1,2), fun_evaluate);
 else
