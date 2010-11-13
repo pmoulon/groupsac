@@ -1,4 +1,5 @@
-function [fun_handle] = prosac_sample(ordering)
+% prosac sampling, always sample from the last element
+function [fun_handle] = prosacSample(ordering)
 
 global PR;
 
