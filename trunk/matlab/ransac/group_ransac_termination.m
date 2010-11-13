@@ -9,7 +9,7 @@ l1mp = log(1.0 - confidence);
 
 fun_handle = @check_termination;
 
-    function [terminate best_inliers] = check_termination(best_inliers, inliers, model, round)
+    function [terminate best_inliers] = check_termination(best_inliers, inliers, model, round, verbose)
         % first update the minimal inlier we need for non-randomness if we start a new group configration
         if GR.cfg_rounds == 1
             cfg = GR.grp_cfgs{GR.cur_grps}(GR.cur_cfg,:);
