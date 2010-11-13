@@ -6,11 +6,11 @@ global PR;
 
 
 %% set up putatives
-xs1 = [723 887; 1091 699; 1691 811; 447 635; 971 91; 1903 447; 1483 1555]';
-xs2 = [1251 1243; 1603 923; 2067 1031; 787 484; 1355 363; 2163  743; 1875 1715]';
+xs1 = [1251 1243; 1603 923; 2067 1031; 787 484; 1355 363; 2163  743; 1875 1715]';
+xs2 = [723 887; 1091 699; 1691 811; 447 635; 971 91; 1903 447; 1483 1555]';
 scores = [1 1 1 1 1 1 1];
-ordering = 1 : 7;
-is_inlier = 1 : 7;
+ordering = [1 : 7]';
+is_inlier = [1 : 7]';
 
 %% control parameters
 early = 0;
@@ -21,6 +21,7 @@ min_sample_num = 7;
 max_rounds = 5000;
 confidence = 0.99;
 rounds_to_equal = 200000;
+verbose = true;
 fun_compute = fundmat7ptSolver(xs1,xs2);
 fun_evaluate = fundmat7ptEvaluator(xs1,xs2,sigma);
 fun_candidates = candidatesProsac(min_sample_num, rounds_to_equal, ordering);
@@ -54,7 +55,7 @@ while ti <= test_num
 	disp(sprintf('test %d:', ti));
 	tic;
 	[round success best_inliers best_model veri_num] = ransac(datum_num, fun_compute, fun_evaluate, fun_candidates, fun_sample, fun_termination, -1, ...
-                                                     min_sample_num, max_rounds, confidence, gui);
+                                                     min_sample_num, max_rounds, confidence, gui, verbose);
     timings(ti) = toc;
     rounds(ti) = round;
     inliers(ti) = length(best_inliers);
