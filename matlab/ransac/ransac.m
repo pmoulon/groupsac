@@ -51,7 +51,7 @@ while 1
         fun_draw(sampled);
     end
     
-    [terminate best_inliers] = fun_termination(best_inliers, inliers, model, round);  % check the termination condition
+    [terminate best_inliers] = fun_termination(best_inliers, inliers, model, round, verbose);  % check the termination condition
     if terminate
         if gui fun_draw(sampled);  end                  % always draw the best sample at the end
         success = true;
@@ -68,7 +68,7 @@ while 1
 end
 
 %% the default termination check for RANSAC, which only depends on the rounds needed
-    function [terminate best_inliers] = default_termination(best_inliers, inliers, model, round)
+    function [terminate best_inliers] = default_termination(best_inliers, inliers, model, round, verbose)
         persistent rounds_needed;
         if length(inliers) > length(best_inliers)
             best_inliers = inliers;

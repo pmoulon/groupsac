@@ -12,7 +12,7 @@ fun_handle = @compute;
 
     function [F] = compute(sampled)
         if length(sampled) == 7
-            F = vgg_F_from_7pts_2img(xs1(:, sampled), xs2(:, sampled)); % F(:,:,n) is the n-th solution
+            F = vgg_F_from_7pts_2img(xs2(:, sampled), xs1(:, sampled)); % F(:,:,n) is the n-th solution
         else
             F = fundmatrix(xs1(:, sampled), xs2(:, sampled)); % call Peter's function
         end

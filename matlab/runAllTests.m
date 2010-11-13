@@ -8,4 +8,4 @@ disp('**************** Unit tests for ransac ****************');
 cd ransac; runtests; cd ..;
 
 disp('**************** Unit tests for interfaces ****************');
-%runtests;
+cd interfaces; runtests; cd ..;
