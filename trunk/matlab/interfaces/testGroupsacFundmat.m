@@ -3,8 +3,8 @@ initTestSuite;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function testSimple
-clear PR;
-global PR;
+clear GR;
+global GR;
 
 %% set up putatives
 xs1 = [1251 1243; 1603 923; 2067 1031; 787 484; 1355 363; 2163  743; 1875 1715]';
@@ -13,6 +13,7 @@ ordering = (1 : 7)';
 
 %% control parameters
 datum_num = size(xs1,2);
+early = 0;
 gui = false;
 sigma = 1.0;
 min_sample_num = 7;
@@ -24,14 +25,20 @@ fun_compute = fundmat7ptSolver(xs1,xs2);
 fun_evaluate = fundmat7ptEvaluator(xs1,xs2,sigma);
 fun_candidates = candidatesProsac(min_sample_num, rounds_to_equal, ordering);
 fun_sample = prosacSample(ordering);
-fun_termination = prosac_termination(min_sample_num, max_rounds, confidence);
+if early
+	fun_termination = early_termination_prosac(S.is_inlier, 0.8, size(xs1,2), fun_evaluate);
+else
+	fun_termination = prosac_termination(min_sample_num, max_rounds, confidence);
+end
 
-%% initialize PROSAC global variable
-PR = {};
+% initialize GroupSAC global variable
+GR = {};
+GR.cur_grps = S.init_grp_num;
+GR.cur_cfg  = 0;
+GR.initialized = 0;
 
-[round success best_inliers ~] = ransac(datum_num, fun_compute, fun_evaluate, fun_candidates, fun_sample, fun_termination, -1, ...
-    min_sample_num, max_rounds, confidence, gui, verbose);
-
+[round success best_inliers best_model veri_num] = ransac(datum_num, fun_compute, fun_evaluate, fun_candidates, -1, fun_termination, fun_draw, ...
+    min_sample_num, max_rounds, confidence, gui);
 assertEqual(1, round);
 assertTrue(success);
 assertEqual((1:7)', best_inliers);

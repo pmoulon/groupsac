@@ -1,4 +1,5 @@
-%% the early termination only checks whether the sampling is all the inliers
+%% the early termination only checks whether the sampling contains only the inliers (given the ground truth inliers beforehand)
+%% it is only used to evaluate how fast RANSAC finds the real inliers, not for the real experiment
 function [fun_handle] = early_termination(is_inlier, prop)
 
 fun_handle = @check_termination;
