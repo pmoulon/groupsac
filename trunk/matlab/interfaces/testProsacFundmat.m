@@ -1,9 +1,10 @@
-%% prosac for fundamental matrix matching
-function [] = testProsacFundmat()
+function test_suite = testProsacFundmat
+initTestSuite;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function testSimple
 clear PR;
 global PR;
-
 
 %% set up putatives
 xs1 = [1251 1243; 1603 923; 2067 1031; 787 484; 1355 363; 2163  743; 1875 1715]';
@@ -40,4 +41,5 @@ assertEqual(1, round);
 assertTrue(success);
 assertEqual((1:7)', best_inliers);
 
-end
+%#ok<*STOUT> 
+%#ok<*DEFNU>
