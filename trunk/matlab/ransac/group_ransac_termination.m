@@ -1,5 +1,5 @@
 %% the default termination check for RANSAC, which only depends on the rounds needed
-function [fun_handle] = group_ransac_termination(min_sample_num, max_rounds, confidence)
+function [fun_handle] = group_ransac_termination(min_sample_num, max_rounds, confidence, verbose)
 
 global vis_map GR;
 
@@ -37,13 +37,15 @@ fun_handle = @check_termination;
             cfg_size = sum(sum(vis_map(:,cfg), 2) > 0);
             rounds_needed = ransacRoundsNeeded(inf, min_sample_num, l1mp, cfg_size, length(inliers));
             %GR.grp_cfgs{GR.cur_grps}(GR.cur_cfg,:)
-			fprintf('cfg %s, round %d, %d inliers out of %d, non_randomness %d, rounds needed %d, allowed:%d\n', ...
-                          mat2str(cfg), GR.cfg_rounds, length(inliers), cfg_size, min_inlier, rounds_needed, rounds_allowed);
+			if verbose 
+                fprintf('cfg %s, round %d, %d inliers out of %d, non_randomness %d, rounds needed %d, allowed:%d\n', ...
+                    mat2str(cfg), GR.cfg_rounds, length(inliers), cfg_size, min_inlier, rounds_needed, rounds_allowed);
+            end
         end
 
         terminate = (length(inliers) > min_inlier && GR.cfg_rounds >= rounds_needed) || round > max_rounds;
         
-        if terminate
+        if terminate && verbose
             disp(sprintf('ready to terminate when non_randomness:%d inliers, rounds needed:%d', min_inlier, rounds_needed));
         end
         

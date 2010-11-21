@@ -1,5 +1,5 @@
 %% return the handle of a function that gives candidates for RANSAC's sampling
-function [fun_handle] = candidates_single_group(min_sample_num, rounds_to_equal)
+function [fun_handle] = candidates_single_group(min_sample_num, rounds_to_equal, verbose)
 
 global GR vis_map;
 
@@ -12,7 +12,7 @@ fun_handle = @select_candidates;
         % update the book keeping
         new_cfg = 0;
         if ~GR.initialized                                                           % intialize
-            build_grp_cfgs(min_sample_num, rounds_to_equal, GR.cur_grps);
+            build_grp_cfgs(min_sample_num, rounds_to_equal, GR.cur_grps, verbose);
 			GR.initialized = 1;
             new_cfg = 1;
         elseif round > GR.rounds{GR.cur_grps}(GR.cur_cfg)                            % the current rounds have been used up

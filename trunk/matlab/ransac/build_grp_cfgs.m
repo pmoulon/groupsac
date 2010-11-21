@@ -1,5 +1,5 @@
 %% build a list of group configs and their corresponding rounds
-function [] = build_grp_cfgs(min_sample_num, rounds_to_equal, grps_used)
+function [] = build_grp_cfgs(min_sample_num, rounds_to_equal, grps_used, verbose)
 
 global GR vis_map;
 
@@ -48,7 +48,9 @@ GR.rounds  {grps_used} = base_rounds + cumsum(rounds(gi_sorted)); % new rounds
 GR.min_inliers{grps_used} = min_inliers;                          % the minimal number of inliers to prove non-randomness
 GR.cur_grps = grps_used;                                          % move to the next level
 GR.cur_cfg  = 1;                                                  % start from the 1st cfg
-disp(sprintf('built cfgs with %d groups, %d rounds needed', grps_used, GR.rounds{grps_used}(end)));
+if verbose
+    disp(sprintf('built cfgs with %d groups, %d rounds needed', grps_used, GR.rounds{grps_used}(end)));
+end
 
 
 end
