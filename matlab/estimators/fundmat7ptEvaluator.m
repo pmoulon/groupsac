@@ -20,8 +20,8 @@ fun_handle = @evaluate;
             % check all the putatives
             is_inliers = zeros(length(candidates), 1);
             for pi = 1:length(candidates)
-                if fundmat7ptError(Fs(:,:,i), xs1(:, pi), xs2(:, pi)) <= err_tol
-                    is_inliers(pi) = 1;
+                if fundmat7ptError(Fs(:,:,i), xs1(:, candidates(pi)), xs2(:, candidates(pi))) <= err_tol
+                    is_inliers(candidates(pi)) = 1;
                 end
             end
             
