@@ -42,16 +42,24 @@ while 1
     candidates = fun_candidates(round);                 % get the candidates for sampling
     sampled = fun_sample(candidates, min_sample_num);   % get sample indices from candidates
     
-    % For GroupSANC, return inlier in the current group configuration
+    % For GroupSAC, return inlier in the current group configuration
     model = fun_compute(sampled);                     % compute the new model
-    [inliers ~] = fun_evaluate(model, candidates);        % compute the inliers for the new model.
+    if isempty(model) == 0 % Handle posible degenerate model
+        [inliers ~] = fun_evaluate(model, candidates);        % compute the inliers for the new model.
+    else
+        inliers = [];
+    end
     veri_num = veri_num + length(candidates);
     
     if gui && mod(round,round_per_draw) == 0
         fun_draw(sampled);
     end
     
-    [terminate best_inliers] = fun_termination(best_inliers, inliers, model, round, verbose);  % check the termination condition
+    if isempty(inliers)
+        terminate = false;
+    else
+        [terminate best_inliers] = fun_termination(best_inliers, inliers, model, round, verbose);  % check the termination condition
+    end
     if terminate
         if gui fun_draw(sampled);  end                  % always draw the best sample at the end
         success = true;
