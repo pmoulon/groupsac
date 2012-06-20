@@ -5,7 +5,7 @@ initTestSuite;
 function testSimple
 
 % load data
-i1 = 1; i2 = 1;
+i1 = 1; i2 = 2;
 [view, Xi, ~] = vgg_example_scene(4);
 F = vgg_F_from_P(view(i1).P, view(i2).P);
 
