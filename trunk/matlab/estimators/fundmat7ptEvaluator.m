@@ -1,4 +1,4 @@
-% return an evaluate function handle to use in line fitting RANSAC
+% return an evaluate function handle to use in fundamental matrix fitting RANSAC
 function [fun_handle] = fundmat7ptEvaluator(xs1, xs2, sigma)
 
 %% compute error threshold
