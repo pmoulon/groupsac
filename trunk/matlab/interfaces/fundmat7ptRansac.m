@@ -1,4 +1,4 @@
-% use RANSAC to determine the inliers in the points by fitting a line model
+% use RANSAC to determine the inliers in the points by fitting a fundamental matrix model
 function [success, inliers, model] = fundmat7ptRansac(xs1, xs2, sigma)
 
 assert(size(xs1,2) == size(xs2,2));
