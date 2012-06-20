@@ -11,7 +11,7 @@ fun_handle = @select_candidates;
     function [candidates] = select_candidates(round)
         % update the book keeping
         new_cfg = 0;
-        if ~GR.initialized                                                           % intialize
+        if ~GR.initialized                                                           % initialize
             build_grp_cfgs(min_sample_num, rounds_to_equal, GR.cur_grps, verbose);
 			GR.initialized = 1;
             new_cfg = 1;
